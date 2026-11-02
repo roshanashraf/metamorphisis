@@ -73,6 +73,34 @@ body::before {
   width: min(100%, var(--case-shell));
 }
 
+@media (max-width: 767px) {
+  .case-shell {
+    padding-top: 76px;
+  }
+}
+
+/* iOS-style glass: blur over a translucent page color. */
+.glass-control {
+  background: color-mix(in srgb, var(--color-home) 46%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.8);
+  backdrop-filter: blur(22px) saturate(1.8);
+  border: 1px solid color-mix(in srgb, var(--color-home-ink) 14%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 50%, transparent),
+    0 10px 28px rgb(0 0 0 / 0.14);
+  color: var(--color-home-ink);
+}
+
+.glass-control:hover {
+  background: color-mix(in srgb, var(--color-home) 62%, transparent);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-control {
+    background: color-mix(in srgb, var(--color-home) 92%, transparent);
+  }
+}
+
 .home-heading {
   font-family: var(--font-home-display);
   font-weight: 400;

@@ -71,11 +71,11 @@ const single = screens.length === 1 ? screens[0] : null;
           ))
         }
       </div>
-      <button class="screen-rail__arrow screen-rail__arrow--prev" type="button" data-rail-prev hidden>
+      <button class="screen-rail__arrow screen-rail__arrow--prev glass-control" type="button" data-rail-prev hidden>
         <span class="screen-rail__chevron screen-rail__chevron--prev" aria-hidden="true"></span>
         <span class="screen-rail__name">Previous screens</span>
       </button>
-      <button class="screen-rail__arrow screen-rail__arrow--next" type="button" data-rail-next hidden>
+      <button class="screen-rail__arrow screen-rail__arrow--next glass-control" type="button" data-rail-next hidden>
         <span class="screen-rail__hint" data-rail-hint>
           Press <i aria-hidden="true">→</i>
         </span>
@@ -301,13 +301,9 @@ const single = screens.length === 1 ? screens[0] : null;
     width: 64px;
     height: 64px;
     padding: 0;
-    border: 0;
     border-radius: 50%;
-    background: #8c8480;
-    color: #fff;
     cursor: pointer;
     transform: translateY(-50%);
-    box-shadow: 0 8px 22px rgb(0 0 0 / 0.18);
   }
 
   .screen-rail__arrow[hidden] {
@@ -322,12 +318,8 @@ const single = screens.length === 1 ? screens[0] : null;
     right: 10px;
   }
 
-  .screen-rail__arrow:hover {
-    background: #7c746f;
-  }
-
   .screen-rail__arrow:focus-visible {
-    outline: 4px solid #9eb8e8;
+    outline: 2px solid var(--color-home-ink);
     outline-offset: 3px;
   }
 

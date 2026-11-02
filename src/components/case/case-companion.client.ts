@@ -89,7 +89,11 @@ export function mountCaseCompanion() {
       const margin = 18;
       const bar = document.querySelector('.case-study-bar');
       const barBottom = bar ? bar.getBoundingClientRect().bottom : 0;
-      const header = Math.max(80, barBottom);
+      const home = document.querySelector('.case-float--home');
+      const homeBottom = home ? home.getBoundingClientRect().bottom : 0;
+      const header = Math.max(18, barBottom, homeBottom);
+      const settings = document.querySelector('.case-float--settings');
+      const settingsClearance = settings ? settings.getBoundingClientRect().height + 28 : margin;
       const col = contentColumn();
       const bodyPad = 48;
       const halfW = state.halfW;
@@ -111,7 +115,7 @@ export function mountCaseCompanion() {
       }
 
       x = clamp(x, margin + halfW, window.innerWidth - margin - halfW);
-      y = clamp(y, header + halfH, window.innerHeight - margin - halfH);
+      y = clamp(y, header + halfH + 8, window.innerHeight - settingsClearance - halfH);
       return { x, y };
     }
 

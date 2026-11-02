@@ -88,7 +88,7 @@ import CaseCompanion from '../../case/CaseCompanion.astro';
 <CaseCompanion defaultLine="First line before scroll, or the hero line." />
 ```
 
-`CaseStudyBar` adds a sticky header with a **Guide** dropdown: **Dots** (default particle) or **Roshan** (Figma-style pointer). Choice is saved in `localStorage` as `companion-variant`.
+`CaseStudyBar` adds a glass **Home** button at the top left, and a settings button at the bottom right. Settings opens the theme, notch, and guide choices. Guide is **Dots** (default particle) or **Roshan** (Figma-style pointer), saved in `localStorage` as `companion-variant`.
 
 2. On each beat, set **`data-guide`** to the spoken line (first person, one sentence). The companion picks the section closest to the middle of the viewport. The caption shows **only when you hover or focus the mascot** — it stays in the side gutter so it does not sit over the reading column.
 
