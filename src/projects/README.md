@@ -156,5 +156,7 @@ Each `id` must match an element on the page. Parents are sections too, not just 
 | Scroll companion (mascot + bubble) | `src/components/case/CaseCompanion.astro` |
 | Section index (tick rail + list) | `src/components/case/CaseIndex.astro` |
 | Phone mockup (image or video) | `src/components/case/PhoneMockup.astro` |
-| Case study sticky bar + guide switcher | `src/components/case/CaseStudyBar.astro` |
+| Screen row (carousel of phones or images) | `src/components/case/ScreenRail.astro` |
+| Next case study link | `src/components/case/CaseNext.astro` |
+| Home button and settings panel | `src/components/case/CaseStudyBar.astro` |
 | One project’s UI | `src/components/projects/{slug}/` |

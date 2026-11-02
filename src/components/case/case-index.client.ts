@@ -48,21 +48,52 @@ export function mountCaseIndex() {
     window.scrollTo({ top: Math.max(0, top), behavior });
   }
 
-  function pick() {
+  function currentSectionIndex() {
     const atEnd =
       window.scrollY > 0 &&
       window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-    if (atEnd) {
-      setCurrent(pairs[pairs.length - 1].target.id);
-      return;
-    }
+    if (atEnd) return pairs.length - 1;
 
     const line = marker() + 2;
-    let current = pairs[0];
-    for (const pair of pairs) {
-      if (pair.target.getBoundingClientRect().top <= line) current = pair;
+    let index = 0;
+    for (let i = 0; i < pairs.length; i++) {
+      if (pairs[i].target.getBoundingClientRect().top <= line) index = i;
     }
-    setCurrent(current.target.id);
+    return index;
+  }
+
+  function pick() {
+    setCurrent(pairs[currentSectionIndex()].target.id);
+  }
+
+  function typingTarget(target: EventTarget | null) {
+    if (!(target instanceof HTMLElement)) return false;
+    const tag = target.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
+  }
+
+  function settingsOpen() {
+    const dialog = document.querySelector('[data-case-settings]');
+    return dialog instanceof HTMLDialogElement && dialog.open;
+  }
+
+  function onWindowSectionKey(event: KeyboardEvent) {
+    if (event.repeat || event.altKey || event.metaKey || event.ctrlKey || !event.shiftKey) return;
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+    if (typingTarget(event.target)) return;
+    if (settingsOpen()) return;
+    if (event.target instanceof Element && event.target.closest('[data-case-index]')) return;
+
+    const index = currentSectionIndex();
+    const next = event.key === 'ArrowDown' ? index + 1 : index - 1;
+    if (next < 0 || next >= pairs.length) return;
+
+    event.preventDefault();
+    const section = pairs[next].target;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    scrollToSection(section, motion);
+    history.replaceState(null, '', `#${section.id}`);
+    setCurrent(section.id);
   }
 
   function onScroll() {
@@ -158,6 +189,7 @@ export function mountCaseIndex() {
   nav.addEventListener('keydown', onKeyDown);
   nav.addEventListener('click', onClick);
   document.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('keydown', onWindowSectionKey);
 
   return () => {
     cancelAnimationFrame(frame);
@@ -171,6 +203,7 @@ export function mountCaseIndex() {
     nav.removeEventListener('keydown', onKeyDown);
     nav.removeEventListener('click', onClick);
     document.removeEventListener('pointerdown', onPointerDown);
+    window.removeEventListener('keydown', onWindowSectionKey);
     nav.classList.remove('is-open');
     for (const pair of pairs) pair.target.removeAttribute(MARK);
   };

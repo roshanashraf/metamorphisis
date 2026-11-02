@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import PhoneMockup from '../../case/PhoneMockup.astro';
+import PhoneMockup from './PhoneMockup.astro';
 
 interface Screen {
   src?: ImageMetadata;
@@ -76,9 +76,6 @@ const single = screens.length === 1 ? screens[0] : null;
         <span class="screen-rail__name">Previous screens</span>
       </button>
       <button class="screen-rail__arrow screen-rail__arrow--next glass-control" type="button" data-rail-next hidden>
-        <span class="screen-rail__hint" data-rail-hint>
-          Press <i aria-hidden="true">→</i>
-        </span>
         <span class="screen-rail__chevron" aria-hidden="true"></span>
         <span class="screen-rail__name">Next screens</span>
       </button>
@@ -95,16 +92,14 @@ const single = screens.length === 1 ? screens[0] : null;
   const cleanups: Array<() => void> = [];
   const rails = new Map<HTMLElement, Rail>();
 
-  function mountRail(wrap: HTMLElement, showHint: boolean) {
+  function mountRail(wrap: HTMLElement) {
     const scroller = wrap.querySelector('[data-screen-rail]');
     const prev = wrap.querySelector('[data-rail-prev]');
     const next = wrap.querySelector('[data-rail-next]');
-    const hint = wrap.querySelector('[data-rail-hint]');
     if (!(scroller instanceof HTMLElement)) return () => {};
     if (!(prev instanceof HTMLButtonElement) || !(next instanceof HTMLButtonElement)) return () => {};
 
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let used = false;
 
     function limit() {
       return scroller.scrollWidth - scroller.clientWidth;
@@ -115,9 +110,6 @@ const single = screens.length === 1 ? screens[0] : null;
       const overflow = max > 8;
       prev.hidden = !overflow || scroller.scrollLeft <= 4;
       next.hidden = !overflow || scroller.scrollLeft >= max - 4;
-      if (hint instanceof HTMLElement) {
-        hint.hidden = !showHint || used || !overflow || scroller.scrollLeft > 4;
-      }
     }
 
     function canStep(direction: number) {
@@ -136,12 +128,10 @@ const single = screens.length === 1 ? screens[0] : null;
         left: direction * distance,
         behavior: motion.matches ? 'auto' : 'smooth',
       });
-      used = true;
       update();
     }
 
     function onScroll() {
-      if (scroller.scrollLeft > 4) used = true;
       update();
     }
 
@@ -219,8 +209,8 @@ const single = screens.length === 1 ? screens[0] : null;
   function boot() {
     while (cleanups.length) cleanups.pop()?.();
     const wraps = document.querySelectorAll('[data-screen-rail-wrap]');
-    wraps.forEach((wrap, index) => {
-      if (wrap instanceof HTMLElement) cleanups.push(mountRail(wrap, index === 0));
+    wraps.forEach((wrap) => {
+      if (wrap instanceof HTMLElement) cleanups.push(mountRail(wrap));
     });
   }
 
@@ -347,47 +337,10 @@ const single = screens.length === 1 ? screens[0] : null;
     white-space: nowrap;
   }
 
-  .screen-rail__hint {
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 10px);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 8px 8px 14px;
-    border-radius: 12px;
-    background: #2b2b2b;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 1;
-    white-space: nowrap;
-    box-shadow: 0 8px 20px rgb(0 0 0 / 0.2);
-  }
-
-  .screen-rail__hint[hidden] {
-    display: none;
-  }
-
-  .screen-rail__hint i {
-    display: grid;
-    place-items: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: #3d3d3d;
-    font-style: normal;
-    font-size: 14px;
-  }
-
   @media (max-width: 639px) {
     .screen-rail__arrow {
       width: 48px;
       height: 48px;
-    }
-
-    .screen-rail__hint {
-      display: none;
     }
   }
 </style>
