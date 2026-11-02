@@ -1,4 +1,4 @@
-# unnamed
+# roshanashraf
 
 Temporary-brand UX portfolio. Static **Astro** site with **MDX** content collections and CSS-first motion. Deploy target: **Cloudflare Pages** (free tier).
 
@@ -16,7 +16,7 @@ npm run preview
 
 ## Cloudflare Pages
 
-Connect the GitHub repo `unnamed` in the Cloudflare dashboard → Workers & Pages → Create → Connect to Git.
+Connect the GitHub repo `metamorphisis` in the Cloudflare dashboard → Workers & Pages → Create → Connect to Git.
 
 | Setting | Value |
 |---------|--------|

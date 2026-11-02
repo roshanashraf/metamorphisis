@@ -4,7 +4,7 @@ import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://unnamed.pages.dev',
+  site: 'https://roshanashraf.pages.dev',
   output: 'static',
   integrations: [mdx()],
   image: {

@@ -24,7 +24,7 @@ export async function getStaticPaths() {
 
 const { project, next } = Astro.props;
 const { Content } = await render(project);
-const title = project.data.seo?.title ?? `${project.data.title} — unnamed`;
+const title = project.data.seo?.title ?? `${project.data.title} — roshanashraf`;
 const description = project.data.seo?.description ?? project.data.summary;
 const isStub = project.data.status === 'stub';
 const View = getProjectView(project.id);
