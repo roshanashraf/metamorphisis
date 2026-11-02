@@ -1,0 +1,192 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  /** Outer width of the phone, in pixels. */
+  width?: number;
+  /** Outer height of the phone, in pixels. */
+  height?: number;
+  image?: ImageMetadata;
+  video?: string;
+  poster?: string;
+  alt?: string;
+  eager?: boolean;
+  /** Show the camera cutout. The bar control can hide it for every phone. */
+  notch?: boolean;
+  /** Number drawn on an empty screen, marking where an image will go. */
+  mark?: string;
+}
+
+const ratio = 1387.5 / 667.359;
+const { image, video, poster, alt = '', eager = false, notch = true, mark } = Astro.props;
+
+let width = Astro.props.width;
+let height = Astro.props.height;
+
+if (width == null && height == null) {
+  width = 280;
+  height = Math.round(280 * ratio);
+} else if (width != null && height == null) {
+  height = Math.round(width * ratio);
+} else if (height != null && width == null) {
+  width = Math.round(height / ratio);
+}
+---
+
+<div class="phone" data-notch={notch ? 'true' : 'false'} style={`--phone-w: ${width}; --phone-h: ${height};`}>
+  <div class="phone__body" aria-hidden="true"></div>
+  <span class="phone__key phone__key--silent" aria-hidden="true"></span>
+  <span class="phone__key phone__key--up" aria-hidden="true"></span>
+  <span class="phone__key phone__key--down" aria-hidden="true"></span>
+  <span class="phone__key phone__key--power" aria-hidden="true"></span>
+  <div class="phone__screen">
+    {
+      video ? (
+        <video
+          class="phone__media"
+          src={video}
+          poster={poster}
+          muted
+          playsinline
+          loop
+          autoplay
+          aria-label={alt}
+        />
+      ) : (
+        image && (
+          <Image
+            class="phone__media"
+            src={image}
+            alt={alt}
+            widths={[280, 420, 640]}
+            sizes={`${width}px`}
+            loading={eager ? 'eager' : 'lazy'}
+          />
+        )
+      )
+    }
+    {mark && !image && !video && <span class="phone__mark">{mark}</span>}
+  </div>
+  <span class="phone__island" aria-hidden="true"></span>
+</div>
+
+<style>
+  .phone {
+    position: relative;
+    flex: none;
+    width: min(100%, calc(var(--phone-w) * 1px));
+    aspect-ratio: var(--phone-w) / var(--phone-h);
+    filter: var(--shadow-preview);
+    --phone-frame: #141414;
+    --phone-edge: #3a3a3a;
+    --phone-island: #000;
+    --phone-glass: #fff;
+  }
+
+  html[data-theme='dark'] .phone {
+    --phone-frame: #f2f2f2;
+    --phone-edge: #c8c8c8;
+    --phone-island: #111;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme='light']) .phone {
+      --phone-frame: #f2f2f2;
+      --phone-edge: #c8c8c8;
+      --phone-island: #111;
+    }
+  }
+
+  .phone__body {
+    position: absolute;
+    left: 0.51%;
+    top: 0;
+    width: 98.98%;
+    height: 100%;
+    border-radius: 15.13% / 7.28%;
+    background: var(--phone-frame);
+    box-shadow: inset 0 0 0 1px var(--phone-edge);
+  }
+
+  .phone__screen {
+    position: absolute;
+    z-index: 1;
+    left: 3.36%;
+    top: 1.37%;
+    width: 93.28%;
+    height: 97.26%;
+    overflow: hidden;
+    border-radius: 13.17% / 6.08%;
+    background: var(--phone-glass);
+  }
+
+  .phone__media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .phone__mark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-home-display);
+    font-size: 2.75rem;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #0a0a0a;
+  }
+
+  .phone__island {
+    position: absolute;
+    z-index: 2;
+    left: 35.07%;
+    top: 2.83%;
+    width: 29.87%;
+    height: 4.25%;
+    border-radius: 999px;
+    background: var(--phone-island);
+  }
+
+  .phone[data-notch='false'] .phone__island,
+  html[data-phone-notch='without'] .phone__island {
+    display: none;
+  }
+
+  .phone__key {
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    width: 0.51%;
+    min-width: 2px;
+    background: var(--phone-frame);
+    border-radius: 2px 0 0 2px;
+  }
+
+  .phone__key--silent {
+    top: 18.58%;
+    height: 3.76%;
+  }
+
+  .phone__key--up {
+    top: 25.81%;
+    height: 7.58%;
+  }
+
+  .phone__key--down {
+    top: 35.68%;
+    height: 7.5%;
+  }
+
+  .phone__key--power {
+    left: auto;
+    right: 0;
+    top: 31.13%;
+    height: 12.11%;
+    border-radius: 0 2px 2px 0;
+  }
+</style>

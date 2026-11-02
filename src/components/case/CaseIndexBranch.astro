@@ -1,0 +1,153 @@
+---
+import type { CaseIndexSection } from './case-index.ts';
+import CaseIndexBranch from './CaseIndexBranch.astro';
+
+interface Props {
+  sections: CaseIndexSection[];
+  markFirst?: boolean;
+}
+
+const { sections, markFirst = false } = Astro.props;
+---
+
+<ol class="case-index__list">
+  {
+    sections.map((section, index) => (
+      <li class="case-index__item">
+        <a
+          class="case-index__link"
+          href={`#${section.id}`}
+          aria-current={markFirst && index === 0 ? 'location' : undefined}
+        >
+          <span class="case-index__label">{section.label}</span>
+          <span class="case-index__tick" aria-hidden="true" />
+        </a>
+        {section.children?.length ? <CaseIndexBranch sections={section.children} /> : null}
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .case-index__list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .case-index__item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 9px;
+  }
+
+  .case-index__link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 36px;
+    min-height: 12px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .case-index__link:focus-visible {
+    outline: 2px solid var(--color-home-ink);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .case-index__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .case-index__tick {
+    width: 14px;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    transition: width var(--dur-fast) var(--ease-out);
+  }
+
+  :global(.case-index:not(.is-open)) .case-index__link[aria-current='location'] {
+    color: var(--color-home-ink);
+  }
+
+  :global(.case-index:not(.is-open)) .case-index__link[aria-current='location'] .case-index__tick {
+    width: 30px;
+  }
+
+  :global(.case-index.is-open) .case-index__list,
+  :global(.case-index.is-open) .case-index__item {
+    align-items: stretch;
+    gap: 1px;
+  }
+
+  :global(.case-index.is-open) .case-index__item > .case-index__list {
+    padding-left: 16px;
+  }
+
+  :global(.case-index.is-open) .case-index__tick {
+    display: none;
+  }
+
+  :global(.case-index.is-open) .case-index__link {
+    justify-content: flex-start;
+    min-width: 0;
+    min-height: 0;
+    padding-block: 6px;
+    color: var(--color-home-muted);
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  :global(.case-index.is-open) .case-index__label {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    text-wrap: pretty;
+  }
+
+  :global(.case-index.is-open) .case-index__link:hover,
+  :global(.case-index.is-open) .case-index__link:focus-visible {
+    color: var(--color-home-ink);
+    outline-color: var(--color-home-ink);
+  }
+
+  :global(.case-index.is-open) .case-index__link[aria-current='location'],
+  :global(.case-index.is-open) .case-index__link[aria-current='location']:hover,
+  :global(.case-index.is-open) .case-index__link[aria-current='location']:focus-visible {
+    color: #1a5fd4;
+  }
+
+  :global(html[data-theme='dark']) :global(.case-index.is-open) .case-index__link[aria-current='location'],
+  :global(html[data-theme='dark']) :global(.case-index.is-open) .case-index__link[aria-current='location']:hover,
+  :global(html[data-theme='dark']) :global(.case-index.is-open) .case-index__link[aria-current='location']:focus-visible {
+    color: #4c8dff;
+  }
+
+  :global(html[data-theme='dark']) :global(.case-index:not(.is-open)) .case-index__link[aria-current='location'] .case-index__tick {
+    box-shadow: 0 0 10px rgb(255 255 255 / 0.8);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .case-index__tick {
+      transition: none;
+    }
+  }
+</style>

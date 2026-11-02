@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import Prose from './Prose.astro';
+import ThemeSwitch from './ThemeSwitch.astro';
 
 interface Props {
   id: string;
@@ -20,6 +21,9 @@ const { id, title, summary, year, role, tags, isStub, cover, Content } = Astro.p
 ---
 
 <article class="project">
+  <div class="project__tools">
+    <ThemeSwitch />
+  </div>
   <header class="project__header motion-rise">
     <p class="project__meta">
       <span>{year}</span>
@@ -86,6 +90,12 @@ const { id, title, summary, year, role, tags, isStub, cover, Content } = Astro.p
 </article>
 
 <style>
+  .project__tools {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: var(--space-4);
+  }
+
   .project__header {
     margin-bottom: var(--space-5);
   }

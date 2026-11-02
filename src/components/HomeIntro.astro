@@ -1,4 +1,11 @@
+---
+import ThemeSwitch from './ThemeSwitch.astro';
+---
+
 <header class="home-intro">
+  <div class="home-intro__tools">
+    <ThemeSwitch />
+  </div>
   <h1 class="home-heading">Roshan ashraf</h1>
   <div class="home-rule"></div>
   <p>Product design for moments that need clarity.</p>
@@ -6,6 +13,12 @@
 </header>
 
 <style>
+  .home-intro__tools {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: var(--space-4);
+  }
+
   .home-intro p {
     color: var(--color-home-muted);
     line-height: 1.625;

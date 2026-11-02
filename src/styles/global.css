@@ -68,6 +68,11 @@ body::before {
   padding: 48px;
 }
 
+/* Project pages only. min(100%, …) keeps a phone at the viewport width. */
+.case-shell {
+  width: min(100%, var(--case-shell));
+}
+
 .home-heading {
   font-family: var(--font-home-display);
   font-weight: 400;
@@ -197,6 +202,7 @@ body.page-home {
   line-height: 1.5;
   overflow-x: clip;
   --color-ink: var(--color-home-ink);
+  --color-on-ink: var(--color-home);
 }
 
 body.page-home::before {
@@ -204,7 +210,7 @@ body.page-home::before {
 }
 
 body.page-home ::selection {
-  background: #d4d4d4;
+  background: var(--color-home-selection);
   color: var(--color-home-ink);
 }
 
@@ -478,22 +484,6 @@ html:has(body.page-home) {
 @media (max-width: 860px) {
   .out {
     -webkit-text-stroke-width: 1.2px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  html:has(body.page-home) {
-    --color-home: #0a0a0a;
-    --color-home-ink: #fafafa;
-    --color-home-muted: #a3a3a3;
-    --color-home-hover: rgb(38 38 38 / 0.5);
-    --color-home-plate: #171717;
-    background: var(--color-home);
-    color-scheme: dark;
-  }
-
-  body.page-home ::selection {
-    background: #404040;
   }
 }
 

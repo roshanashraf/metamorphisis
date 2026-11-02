@@ -457,7 +457,7 @@ const items = await Promise.all(
     border-radius: 8px;
     user-select: none;
     max-width: none;
-    filter: drop-shadow(0 12px 28px #00000029) drop-shadow(0 2px 6px #0000001a);
+    filter: var(--shadow-preview);
   }
 
   .arc-preview__plate {
@@ -472,13 +472,6 @@ const items = await Promise.all(
     font-size: 28px;
     letter-spacing: -0.02em;
     line-height: 1.1;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .arc-preview__picture,
-    .arc-preview__plate {
-      filter: drop-shadow(0 14px 32px #00000080) drop-shadow(0 2px 8px #0000004d);
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {

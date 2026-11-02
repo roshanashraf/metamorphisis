@@ -99,7 +99,32 @@ import CaseCompanion from '../../case/CaseCompanion.astro';
 3. **Anchor presets** (`data-guide-mode`, optional): `hero` · `work` · `method` · `toolkit` · `faq` · `contact`.  
    If omitted: first section → `hero`, last → `contact`, middle sections cycle `work` / `method` / `toolkit`.
 
-4. Clarity helpers that already wire this: `guideLine` on hero/close sections, `line` (+ optional `guideMode`) on `StoryBeat`.
+4. Clarity helpers that already wire this: `guideLine` on hero/close sections and `line` on `StoryBeat`. Optional `data-guide-mode` on sections sets companion anchor presets (`hero`, `work`, `method`, `toolkit`, `faq`, `contact`).
+
+### Optional — section index
+
+A fixed rail of ticks on the right. Hover or keyboard focus opens the section list; the current section is marked on the rail and in the list. Click a row to jump there.
+
+```astro
+import CaseIndex from '../../case/CaseIndex.astro';
+
+const sections = [
+  { id: 'overview', label: 'Project overview' },
+  {
+    id: 'problem',
+    label: 'The problem',
+    children: [
+      { id: 'number', label: 'The number that started it' },
+      { id: 'statement', label: 'Problem statement' },
+    ],
+  },
+  { id: 'results', label: 'Results' },
+];
+
+<CaseIndex sections={sections} />
+```
+
+Each `id` must match an element on the page. Parents are sections too, not just group labels. The rail stays off the column below 960px wide.
 
 **Clarity catalog-only MDX:** `src/content/projects/clarity.mdx` has frontmatter only; the page UI lives entirely in components.
 
@@ -129,5 +154,7 @@ import CaseCompanion from '../../case/CaseCompanion.astro';
 | Default page template | `src/components/ProjectStub.astro` |
 | Shared case-study UI | `src/components/case/` |
 | Scroll companion (mascot + bubble) | `src/components/case/CaseCompanion.astro` |
+| Section index (tick rail + list) | `src/components/case/CaseIndex.astro` |
+| Phone mockup (image or video) | `src/components/case/PhoneMockup.astro` |
 | Case study sticky bar + guide switcher | `src/components/case/CaseStudyBar.astro` |
 | One project’s UI | `src/components/projects/{slug}/` |

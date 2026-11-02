@@ -1,0 +1,150 @@
+<div class="theme-switch" role="group" aria-label="Color theme">
+  <button class="theme-switch__option" type="button" data-theme-choice="light" aria-pressed="false">
+    Light
+  </button>
+  <button class="theme-switch__option" type="button" data-theme-choice="dark" aria-pressed="false">
+    Dark
+  </button>
+</div>
+
+<script>
+  const storageKey = 'theme';
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function savedTheme(): 'light' | 'dark' | null {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved === 'light' || saved === 'dark') return saved;
+    } catch {
+      /* ignore */
+    }
+    return null;
+  }
+
+  function resolvedTheme(): 'light' | 'dark' {
+    const explicit = document.documentElement.dataset.theme;
+    if (explicit === 'light' || explicit === 'dark') return explicit;
+    return systemTheme.matches ? 'dark' : 'light';
+  }
+
+  function syncThemeSwitch() {
+    const theme = resolvedTheme();
+    for (const node of document.querySelectorAll('[data-theme-choice]')) {
+      if (!(node instanceof HTMLButtonElement)) continue;
+      node.setAttribute('aria-pressed', String(node.dataset.themeChoice === theme));
+    }
+
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) return;
+    const quiet = document.body.classList.contains('page-home');
+    const styles = getComputedStyle(document.documentElement);
+    const color = styles.getPropertyValue(quiet ? '--color-home' : '--color-paper').trim();
+    if (color) meta.setAttribute('content', color);
+  }
+
+  function setTheme(theme: 'light' | 'dark', persist: boolean) {
+    document.documentElement.dataset.theme = theme;
+    if (persist) {
+      try {
+        localStorage.setItem(storageKey, theme);
+      } catch {
+        /* ignore */
+      }
+    }
+    syncThemeSwitch();
+    window.dispatchEvent(new CustomEvent('theme-change', { detail: theme }));
+  }
+
+  function onClick(event: Event) {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const button = target.closest('[data-theme-choice]');
+    if (!(button instanceof HTMLButtonElement)) return;
+    const choice = button.dataset.themeChoice;
+    if (choice !== 'light' && choice !== 'dark') return;
+    setTheme(choice, true);
+  }
+
+  function onSystemTheme(event: MediaQueryListEvent) {
+    if (savedTheme()) return;
+    setTheme(event.matches ? 'dark' : 'light', false);
+  }
+
+  let themeListenerInstalled = false;
+
+  function boot() {
+    if (!themeListenerInstalled) {
+      document.addEventListener('click', onClick);
+      systemTheme.addEventListener('change', onSystemTheme);
+      themeListenerInstalled = true;
+    }
+    const saved = savedTheme();
+    if (saved) document.documentElement.dataset.theme = saved;
+    else if (!document.documentElement.dataset.theme) {
+      document.documentElement.dataset.theme = systemTheme.matches ? 'dark' : 'light';
+    }
+    syncThemeSwitch();
+  }
+
+  document.addEventListener('astro:page-load', boot);
+  boot();
+</script>
+
+<style>
+  .theme-switch {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px;
+    border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+    border-radius: 999px;
+    color: var(--color-ink);
+  }
+
+  .theme-switch__option {
+    min-height: 32px;
+    padding: 0 0.7rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    opacity: 0.55;
+    cursor: pointer;
+  }
+
+  .theme-switch__option:hover,
+  html[data-theme='light'] .theme-switch__option[data-theme-choice='light'],
+  html[data-theme='dark'] .theme-switch__option[data-theme-choice='dark'] {
+    opacity: 1;
+  }
+
+  html[data-theme='light'] .theme-switch__option[data-theme-choice='light'],
+  html[data-theme='dark'] .theme-switch__option[data-theme-choice='dark'] {
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+  }
+
+  .theme-switch__option:focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme='light']) .theme-switch__option[data-theme-choice='dark'] {
+      opacity: 1;
+      background: var(--color-ink);
+      color: var(--color-on-ink);
+    }
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) .theme-switch__option[data-theme-choice='light'] {
+      opacity: 1;
+      background: var(--color-ink);
+      color: var(--color-on-ink);
+    }
+  }
+</style>

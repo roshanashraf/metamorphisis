@@ -1,4 +1,5 @@
 // Register bespoke case studies here. Steps: src/projects/README.md
+import AirportCaseStudy from '../components/projects/airport-pickups/AirportCaseStudy.astro';
 import ClarityCaseStudy from '../components/projects/clarity/ClarityCaseStudy.astro';
 
 export interface ProjectViewProps {
@@ -8,6 +9,7 @@ export interface ProjectViewProps {
 }
 
 export const projectViews = {
+  'airport-pickups': AirportCaseStudy,
   clarity: ClarityCaseStudy,
 } as const;
 

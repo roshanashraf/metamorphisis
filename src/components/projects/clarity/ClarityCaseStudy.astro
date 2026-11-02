@@ -1,5 +1,6 @@
 ---
 import CaseCompanion from '../../case/CaseCompanion.astro';
+import CaseIndex from '../../case/CaseIndex.astro';
 import CaseStudyBar from '../../case/CaseStudyBar.astro';
 import CaseHero from './CaseHero.astro';
 import StoryBeat from './StoryBeat.astro';
@@ -31,16 +32,33 @@ interface Props {
 }
 
 const { year, role, next } = Astro.props;
+
+const guideDefault = 'The fare was on screen. The trip was not.';
+const guideNamed = 'The booking says the trip out loud.';
+
+const sections = [
+  { id: 'clarity', label: 'Clarity' },
+  {
+    id: 'case-open',
+    label: 'The fare was visible',
+    children: [
+      { id: 'trip-type', label: 'One-way or round trip' },
+      { id: 'route', label: 'Which route' },
+      { id: 'price', label: 'What the fare includes' },
+      { id: 'sightseeing', label: 'Sightseeing' },
+      { id: 'luggage', label: 'Who is travelling' },
+      { id: 'airport', label: 'The flight' },
+    ],
+  },
+  { id: 'named-title', label: 'The booking says it out loud' },
+];
 ---
 
 <article class="case">
   <CaseStudyBar />
-  <CaseCompanion defaultLine="The fare was on screen. The trip was not." />
-  <CaseHero
-    year={year}
-    role={role}
-    guideLine="The fare was on screen. The trip was not."
-  />
+  <CaseIndex sections={sections} />
+  <CaseCompanion defaultLine={guideDefault} />
+  <CaseHero year={year} role={role} guideLine={guideDefault} />
 
   <section
     class="story-beat case-open"
@@ -246,7 +264,7 @@ const { year, role, next } = Astro.props;
     </p>
   </StoryBeat>
 
-  <CaseNamed guideLine="The booking says the trip out loud." />
+  <CaseNamed guideLine={guideNamed} />
   <CaseNext next={next} />
 </article>
 

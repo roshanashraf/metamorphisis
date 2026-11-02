@@ -1,40 +1,242 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import PhoneMockup from '../../case/PhoneMockup.astro';
 
 interface Screen {
-  src: ImageMetadata;
+  src?: ImageMetadata;
+  video?: string;
+  poster?: string;
   alt: string;
   caption: string;
+  /** Number on an empty phone, marking where this screen’s image will go. */
+  mark?: string;
 }
 
 interface Props {
   screens: Screen[];
   eager?: boolean;
+  width?: number;
+  height?: number;
 }
 
-const { screens, eager = false } = Astro.props;
+const { screens, eager = false, width, height } = Astro.props;
+const single = screens.length === 1 ? screens[0] : null;
 ---
 
-<div class="screen-rail" tabindex="0" aria-label="Screens for this part of the booking">
-  {
-    screens.map((screen, index) => (
-      <figure class="screen-rail__item">
-        <Image
-          src={screen.src}
-          alt={screen.alt}
-          widths={[360, 560, 720]}
-          sizes="(max-width: 720px) 72vw, 280px"
-          loading={eager && index === 0 ? 'eager' : 'lazy'}
-          class="screen-rail__img"
+{
+  single ? (
+    <div class="screen-rail screen-rail--one" aria-label="Screens for this part of the booking">
+      <figure class="screen-rail__item screen-rail__item--one">
+        <PhoneMockup
+          image={single.src}
+          video={single.video}
+          poster={single.poster}
+          alt={single.alt}
+          mark={single.mark}
+          width={width}
+          height={height}
+          eager={eager}
         />
-        <figcaption>{screen.caption}</figcaption>
+        <figcaption>{single.caption}</figcaption>
       </figure>
-    ))
+    </div>
+  ) : (
+    <div class="screen-rail-wrap" data-screen-rail-wrap>
+      <div
+        class="screen-rail"
+        data-screen-rail
+        tabindex="0"
+        aria-label="Screens for this part of the booking"
+      >
+        {
+          screens.map((screen, index) => (
+            <figure class="screen-rail__item">
+              {screen.mark && !screen.src && !screen.video ? (
+                <PhoneMockup mark={screen.mark} alt={screen.alt} eager={eager && index === 0} />
+              ) : (
+                screen.src && (
+                  <Image
+                    src={screen.src}
+                    alt={screen.alt}
+                    widths={[360, 560, 720]}
+                    sizes="(max-width: 720px) 72vw, 280px"
+                    loading={eager && index === 0 ? 'eager' : 'lazy'}
+                    class="screen-rail__img"
+                  />
+                )
+              )}
+              <figcaption>{screen.caption}</figcaption>
+            </figure>
+          ))
+        }
+      </div>
+      <button class="screen-rail__arrow screen-rail__arrow--prev" type="button" data-rail-prev hidden>
+        <span class="screen-rail__chevron screen-rail__chevron--prev" aria-hidden="true"></span>
+        <span class="screen-rail__name">Previous screens</span>
+      </button>
+      <button class="screen-rail__arrow screen-rail__arrow--next" type="button" data-rail-next hidden>
+        <span class="screen-rail__hint" data-rail-hint>
+          Press <i aria-hidden="true">→</i>
+        </span>
+        <span class="screen-rail__chevron" aria-hidden="true"></span>
+        <span class="screen-rail__name">Next screens</span>
+      </button>
+    </div>
+  )
+}
+
+<script>
+  type Rail = {
+    step: (direction: number) => void;
+    canStep: (direction: number) => boolean;
+  };
+
+  const cleanups: Array<() => void> = [];
+  const rails = new Map<HTMLElement, Rail>();
+
+  function mountRail(wrap: HTMLElement, showHint: boolean) {
+    const scroller = wrap.querySelector('[data-screen-rail]');
+    const prev = wrap.querySelector('[data-rail-prev]');
+    const next = wrap.querySelector('[data-rail-next]');
+    const hint = wrap.querySelector('[data-rail-hint]');
+    if (!(scroller instanceof HTMLElement)) return () => {};
+    if (!(prev instanceof HTMLButtonElement) || !(next instanceof HTMLButtonElement)) return () => {};
+
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let used = false;
+
+    function limit() {
+      return scroller.scrollWidth - scroller.clientWidth;
+    }
+
+    function update() {
+      const max = limit();
+      const overflow = max > 8;
+      prev.hidden = !overflow || scroller.scrollLeft <= 4;
+      next.hidden = !overflow || scroller.scrollLeft >= max - 4;
+      if (hint instanceof HTMLElement) {
+        hint.hidden = !showHint || used || !overflow || scroller.scrollLeft > 4;
+      }
+    }
+
+    function canStep(direction: number) {
+      const max = limit();
+      if (max <= 8) return false;
+      if (direction > 0) return scroller.scrollLeft < max - 4;
+      return scroller.scrollLeft > 4;
+    }
+
+    function step(direction: number) {
+      if (!canStep(direction)) return;
+      const item = scroller.querySelector('.screen-rail__item');
+      const distance =
+        item instanceof HTMLElement ? item.getBoundingClientRect().width + 20 : scroller.clientWidth * 0.8;
+      scroller.scrollBy({
+        left: direction * distance,
+        behavior: motion.matches ? 'auto' : 'smooth',
+      });
+      used = true;
+      update();
+    }
+
+    function onScroll() {
+      if (scroller.scrollLeft > 4) used = true;
+      update();
+    }
+
+    function onPrev() {
+      step(-1);
+    }
+
+    function onNext() {
+      step(1);
+    }
+
+    prev.addEventListener('click', onPrev);
+    next.addEventListener('click', onNext);
+    scroller.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', update);
+    for (const img of scroller.querySelectorAll('img')) {
+      if (!img.complete) img.addEventListener('load', update, { once: true });
+    }
+    rails.set(wrap, { step, canStep });
+    update();
+
+    return () => {
+      rails.delete(wrap);
+      prev.removeEventListener('click', onPrev);
+      next.removeEventListener('click', onNext);
+      scroller.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', update);
+    };
   }
-</div>
+
+  function railForKeys() {
+    const active = document.activeElement;
+    if (active instanceof Element) {
+      const focused = active.closest('[data-screen-rail-wrap]');
+      if (focused instanceof HTMLElement && rails.has(focused)) return rails.get(focused) ?? null;
+    }
+
+    let best: Rail | null = null;
+    let bestScore = 0;
+    const viewHeight = window.innerHeight;
+    for (const [wrap, rail] of rails) {
+      const box = wrap.getBoundingClientRect();
+      const visible = Math.min(box.bottom, viewHeight) - Math.max(box.top, 0);
+      if (visible < Math.min(box.height, viewHeight) * 0.45) continue;
+      const centerDistance = Math.abs(box.top + box.height / 2 - viewHeight / 2);
+      const score = visible - centerDistance * 0.2;
+      if (score > bestScore) {
+        best = rail;
+        bestScore = score;
+      }
+    }
+    return best;
+  }
+
+  function typingTarget(target: EventTarget | null) {
+    if (!(target instanceof HTMLElement)) return false;
+    const tag = target.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
+  }
+
+  function onWindowKey(event: KeyboardEvent) {
+    if (event.repeat || event.altKey || event.metaKey || event.ctrlKey || event.shiftKey) return;
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    if (typingTarget(event.target)) return;
+    if (event.target instanceof Element && event.target.closest('[data-case-index]')) return;
+
+    const rail = railForKeys();
+    if (!rail) return;
+    const direction = event.key === 'ArrowRight' ? 1 : -1;
+    if (!rail.canStep(direction)) return;
+    event.preventDefault();
+    rail.step(direction);
+  }
+
+  function boot() {
+    while (cleanups.length) cleanups.pop()?.();
+    const wraps = document.querySelectorAll('[data-screen-rail-wrap]');
+    wraps.forEach((wrap, index) => {
+      if (wrap instanceof HTMLElement) cleanups.push(mountRail(wrap, index === 0));
+    });
+  }
+
+  document.addEventListener('astro:page-load', boot);
+  window.addEventListener('keydown', onWindowKey);
+  boot();
+</script>
 
 <style>
+  .screen-rail-wrap {
+    position: relative;
+    width: min(calc(var(--case-shell) - 192px), calc(100vw - 96px));
+    margin-top: var(--space-5);
+    margin-inline: calc((100% - min(calc(var(--case-shell) - 192px), calc(100vw - 96px))) / 2);
+  }
+
   .screen-rail {
     display: flex;
     justify-content: flex-start;
@@ -42,10 +244,23 @@ const { screens, eager = false } = Astro.props;
     gap: 20px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    width: min(1040px, calc(100vw - 96px));
-    margin-top: var(--space-5);
-    margin-inline: calc((100% - min(1040px, 100vw - 96px)) / 2);
+    scrollbar-width: none;
+    width: 100%;
     padding-block: 8px 4px;
+  }
+
+  .screen-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .screen-rail--one {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin-top: var(--space-5);
+    margin-inline: 0;
+    overflow: visible;
+    scroll-snap-type: none;
   }
 
   .screen-rail__item {
@@ -56,12 +271,18 @@ const { screens, eager = false } = Astro.props;
     align-content: start;
   }
 
+  .screen-rail__item--one {
+    flex: none;
+    width: max-content;
+    max-width: 100%;
+  }
+
   .screen-rail__img {
     width: 100%;
     height: auto;
     border-radius: 8px;
     background: var(--color-home);
-    filter: drop-shadow(0 12px 28px #00000029) drop-shadow(0 2px 6px #0000001a);
+    filter: var(--shadow-preview);
   }
 
   .screen-rail__item figcaption {
@@ -69,5 +290,112 @@ const { screens, eager = false } = Astro.props;
     line-height: 1.5;
     color: var(--color-home-muted);
     max-width: 28ch;
+  }
+
+  .screen-rail__arrow {
+    position: absolute;
+    z-index: 3;
+    top: calc(50% - 18px);
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #8c8480;
+    color: #fff;
+    cursor: pointer;
+    transform: translateY(-50%);
+    box-shadow: 0 8px 22px rgb(0 0 0 / 0.18);
+  }
+
+  .screen-rail__arrow[hidden] {
+    display: none;
+  }
+
+  .screen-rail__arrow--prev {
+    left: 10px;
+  }
+
+  .screen-rail__arrow--next {
+    right: 10px;
+  }
+
+  .screen-rail__arrow:hover {
+    background: #7c746f;
+  }
+
+  .screen-rail__arrow:focus-visible {
+    outline: 4px solid #9eb8e8;
+    outline-offset: 3px;
+  }
+
+  .screen-rail__chevron {
+    width: 12px;
+    height: 12px;
+    margin-left: -3px;
+    border-right: 2.5px solid currentColor;
+    border-bottom: 2.5px solid currentColor;
+    transform: rotate(-45deg);
+  }
+
+  .screen-rail__chevron--prev {
+    margin-left: 3px;
+    transform: rotate(135deg);
+  }
+
+  .screen-rail__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .screen-rail__hint {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 10px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 8px 8px 14px;
+    border-radius: 12px;
+    background: #2b2b2b;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.2);
+  }
+
+  .screen-rail__hint[hidden] {
+    display: none;
+  }
+
+  .screen-rail__hint i {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #3d3d3d;
+    font-style: normal;
+    font-size: 14px;
+  }
+
+  @media (max-width: 639px) {
+    .screen-rail__arrow {
+      width: 48px;
+      height: 48px;
+    }
+
+    .screen-rail__hint {
+      display: none;
+    }
   }
 </style>

@@ -48,6 +48,8 @@
   --space-8: 9rem;
 
   --width-content: 77.5rem;
+  /* Case studies. Home stays on the 740px shell. 1280 matches the case-study frame. */
+  --case-shell: 1280px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
@@ -61,10 +63,13 @@
   /* Homepage column, matched to a quiet text page */
   --color-home: #fafafa;
   --color-home-ink: #0a0a0a;
+  --color-home-ink-rgb: 10, 10, 10;
   --color-home-muted: #525252;
   --color-home-rule: #d4d4d4;
   --color-home-hover: #f5f5f5;
   --color-home-plate: #f4f4f4;
+  --color-home-selection: #d4d4d4;
+  --shadow-preview: drop-shadow(0 12px 28px #00000029) drop-shadow(0 2px 6px #0000001a);
   --font-home: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-home-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif;
 
@@ -83,4 +88,50 @@
   --gradient-plate-fallback: linear-gradient(145deg, rgba(185, 245, 74, 0.55), transparent 46%),
     linear-gradient(320deg, rgba(255, 107, 69, 0.28), transparent 42%);
   --gradient-band: linear-gradient(180deg, rgba(185, 245, 74, 0.34), transparent 42%);
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --color-paper: #141612;
+  --color-ink: #f2f0e6;
+  --color-ink-rgb: 242, 240, 230;
+  --color-on-ink: #141612;
+  --color-body: #c8c2b2;
+  --color-lift: #1e211b;
+  --color-hair: rgba(242, 240, 230, 0.14);
+  --color-rule: rgba(242, 240, 230, 0.5);
+  --color-grid: rgba(242, 240, 230, 0.055);
+  --color-fog: rgba(242, 240, 230, 0.5);
+  --color-home: #0a0a0a;
+  --color-home-ink: #fafafa;
+  --color-home-ink-rgb: 250, 250, 250;
+  --color-home-muted: #a3a3a3;
+  --color-home-hover: rgb(38 38 38 / 0.5);
+  --color-home-plate: #171717;
+  --color-home-selection: #404040;
+  --shadow-preview: drop-shadow(0 14px 32px #00000080) drop-shadow(0 2px 8px #0000004d);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-paper: #141612;
+    --color-ink: #f2f0e6;
+    --color-ink-rgb: 242, 240, 230;
+    --color-on-ink: #141612;
+    --color-body: #c8c2b2;
+    --color-lift: #1e211b;
+    --color-hair: rgba(242, 240, 230, 0.14);
+    --color-rule: rgba(242, 240, 230, 0.5);
+    --color-grid: rgba(242, 240, 230, 0.055);
+    --color-fog: rgba(242, 240, 230, 0.5);
+    --color-home: #0a0a0a;
+    --color-home-ink: #fafafa;
+    --color-home-ink-rgb: 250, 250, 250;
+    --color-home-muted: #a3a3a3;
+    --color-home-hover: rgb(38 38 38 / 0.5);
+    --color-home-plate: #171717;
+    --color-home-selection: #404040;
+    --shadow-preview: drop-shadow(0 14px 32px #00000080) drop-shadow(0 2px 8px #0000004d);
+  }
 }

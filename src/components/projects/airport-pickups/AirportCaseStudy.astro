@@ -1,0 +1,525 @@
+---
+import CaseCompanion from '../../case/CaseCompanion.astro';
+import CaseIndex from '../../case/CaseIndex.astro';
+import CaseStudyBar from '../../case/CaseStudyBar.astro';
+import ScreenRail from '../clarity/ScreenRail.astro';
+import CaseNext from '../clarity/CaseNext.astro';
+
+interface NextProject {
+  href: string;
+  title: string;
+}
+
+interface Props {
+  year: number;
+  role: string;
+  next: NextProject | null;
+}
+
+const { year, role, next } = Astro.props;
+
+const guideDefault = 'The pickup was set to a clock. The flight was not.';
+
+const sections = [
+  { id: 'pickups', label: 'Better airport pickups' },
+  { id: 'flow', label: 'Current booking flow' },
+  { id: 'numbers', label: 'Airport pickup bookings' },
+  {
+    id: 'open',
+    label: 'Two clocks',
+    children: [
+      { id: 'situations', label: 'Four situations' },
+      { id: 'move', label: 'The move' },
+    ],
+  },
+  { id: 'on-booking', label: 'A cab that waits on the flight' },
+  { id: 'after', label: 'The flight stays on the trip' },
+  { id: 'name', label: 'Three names' },
+  { id: 'review', label: 'Three ways onto the review' },
+  { id: 'web', label: 'On a wider screen' },
+  { id: 'close', label: 'The booking follows the flight' },
+];
+
+const flowScreens = [
+  {
+    mark: '1',
+    alt: 'Landing screen with the airport pickup search.',
+    caption: 'Landing. The search for an airport pickup.',
+  },
+  {
+    mark: '2',
+    alt: 'Place search with the keyboard open.',
+    caption: 'Place search, with the keyboard.',
+  },
+  {
+    mark: '2.1',
+    alt: 'Place search with a shorter list of results.',
+    caption: 'Place search, a shorter list.',
+  },
+  {
+    mark: '2.2',
+    alt: 'Place search.',
+    caption: 'Place search.',
+  },
+  {
+    mark: '3',
+    alt: 'Loader that says it is finding the best cabs.',
+    caption: 'Finding the best cabs.',
+  },
+  {
+    mark: '4',
+    alt: 'The cab list.',
+    caption: 'The cab list.',
+  },
+  {
+    mark: '5',
+    alt: 'The review, before a flight is asked for.',
+    caption: 'The review.',
+  },
+];
+
+const bookingScreens = [
+  {
+    mark: '6',
+    alt: 'Cab list with one option tied to the flight.',
+    caption: 'The list. One option is tied to the flight.',
+  },
+  {
+    mark: '7',
+    alt: 'Review asking for a flight number.',
+    caption: 'The review asks for the flight.',
+  },
+  {
+    mark: '8',
+    alt: 'Review with the flight attached.',
+    caption: 'The flight is attached.',
+  },
+];
+
+const afterScreens = [
+  {
+    mark: '9',
+    alt: 'The trip on time, with the pickup holding.',
+    caption: 'On time, the pickup holds.',
+  },
+  {
+    mark: '9.1',
+    alt: 'The trip when the flight is delayed.',
+    caption: 'Delayed. The landing time moves with the flight.',
+  },
+  {
+    mark: '9.2',
+    alt: 'After the ride, the trip still says the flight was tracked.',
+    caption: 'After the ride, the trip still says the flight was tracked.',
+  },
+];
+
+const reviewScreens = [
+  {
+    mark: '10',
+    alt: 'Review where the flight number is typed.',
+    caption: 'The flight number, typed.',
+  },
+  {
+    mark: '11',
+    alt: 'Review where a flight is added without typing.',
+    caption: 'Added without typing.',
+  },
+  {
+    mark: '12',
+    alt: 'Review where the flight can be found.',
+    caption: 'Found, when the number is not at hand.',
+  },
+];
+
+const situations = [
+  { index: '01', title: 'Delayed before departure', end: 'Cancel, or change the booking.' },
+  { index: '02', title: 'Land early', end: 'Wait, or cancel.' },
+  { index: '03', title: 'Delay in the air', end: 'The driver cancels.' },
+  { index: '04', title: 'Booked for right now', end: 'Keep waiting.' },
+];
+
+const names = [
+  { title: 'Flight Sync', line: 'Sync the pickup with the landing time.' },
+  { title: 'Flight Connect', line: 'A cab ready whenever you land.' },
+  {
+    title: 'Flight Tracked Cab',
+    line: 'A cab ready whenever you land.',
+    status: 'On the booking',
+  },
+];
+---
+
+<article class="case">
+  <CaseStudyBar />
+  <CaseIndex sections={sections} />
+  <CaseCompanion defaultLine={guideDefault} />
+
+  <header class="case-hero" id="pickups" data-guide={guideDefault} data-guide-mode="hero">
+    <h1 class="case-title">Better airport pickups</h1>
+    <p class="case-lede">The pickup was set to a clock. The flight was not.</p>
+    <p class="case-meta">Airport cabs · MakeMyTrip · {role} · {year}</p>
+  </header>
+
+  <section
+    class="story-beat pickup-block"
+    id="flow"
+    aria-labelledby="flow-title"
+    data-guide="The booking still walks from search to a review that never asks for the flight."
+    data-guide-mode="work"
+  >
+    <h2 class="case-section" id="flow-title">Current booking flow</h2>
+    <p class="case-body">
+      On the list, one option is tied to the flight. On the review, a MakeMyTrip flight can be shown
+      when one exists. When it does not, the review asks for the number.
+    </p>
+    <ScreenRail screens={flowScreens} eager />
+  </section>
+
+  <section
+    class="story-beat pickup-block"
+    id="numbers"
+    aria-label="Airport pickup bookings"
+    data-guide="Most airport pickups are served. Of the ones that are not, most are cancelled by the traveller."
+    data-guide-mode="method"
+  >
+    <div class="pickup-numbers">
+      <div>
+        <p class="case-metric__group-label">Of airport pickup bookings</p>
+        <ul class="pickup-metrics" role="list">
+          <li class="case-metric">
+            <p class="case-metric__value">80%</p>
+            <p class="case-metric__label">Served</p>
+          </li>
+          <li class="case-metric">
+            <p class="case-metric__value">20%</p>
+            <p class="case-metric__label">Unfulfilled</p>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <p class="case-metric__group-label">Of the unfulfilled bookings</p>
+        <ul class="pickup-metrics" role="list">
+          <li class="case-metric">
+            <p class="case-metric__value">85%</p>
+            <p class="case-metric__label">Cancelled by the traveller</p>
+          </li>
+          <li class="case-metric">
+            <p class="case-metric__value">15%</p>
+            <p class="case-metric__label">Denied by the operator</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="story-beat pickup-block"
+    id="open"
+    aria-labelledby="open-title"
+    data-guide="An airport pickup is a meeting of two clocks. When the flight moves, the cab stays put."
+    data-guide-mode="toolkit"
+  >
+    <h2 class="case-section" id="open-title">The landing could move. The cab could not.</h2>
+    <div class="pickup-prose">
+      <p>
+        An airport pickup is a meeting of two clocks. When the flight moves, the cab stays on the time
+        it was booked.
+      </p>
+      <p>People cancel, wait, or get cancelled by the driver.</p>
+    </div>
+  </section>
+
+  <section
+    class="story-beat pickup-block"
+    id="situations"
+    aria-label="Four ways the clocks split"
+    data-guide="Four ways the clocks split, and what people do next."
+    data-guide-mode="work"
+  >
+    <ol class="pickup-situations">
+      {
+        situations.map((item) => (
+          <li>
+            <span class="pickup-situations__index">{item.index}</span>
+            <div>
+              <p class="case-subhead">{item.title}</p>
+              <p class="case-body">{item.end}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section
+    class="story-beat pickup-move"
+    id="move"
+    aria-labelledby="move-title"
+    data-guide="MakeMyTrip already tracks the flight. The pickup can follow the landing."
+    data-guide-mode="method"
+  >
+    <p class="case-metric__group-label">The move</p>
+    <h2 class="case-section" id="move-title">MakeMyTrip already tracks the flight.</h2>
+    <p class="pickup-move__italic">The pickup can follow the landing.</p>
+    <p class="case-body">The cab stops waiting on a time chosen at booking. It waits on the flight.</p>
+  </section>
+
+  <section
+    class="story-beat pickup-block"
+    id="on-booking"
+    aria-labelledby="on-booking-title"
+    data-guide="On the list, one option waits on the flight. The review shows it, or asks for it."
+    data-guide-mode="toolkit"
+  >
+    <h2 class="case-section" id="on-booking-title">A cab that waits on the flight.</h2>
+    <p class="case-body">
+      On the list, one option is tied to the flight. On the review, a MakeMyTrip flight can be shown
+      when one exists. When it does not, the review asks for the number.
+    </p>
+    <ScreenRail screens={bookingScreens} />
+  </section>
+
+  <section
+    class="story-beat pickup-block"
+    id="after"
+    aria-labelledby="after-title"
+    data-guide="On time, the pickup holds. A delay moves the landing with it."
+    data-guide-mode="work"
+  >
+    <h2 class="case-section" id="after-title">The flight stays on the trip.</h2>
+    <p class="case-body">
+      On time, the pickup holds. If the flight is delayed, the landing time moves with it. After the
+      ride, the trip still says the flight was tracked.
+    </p>
+    <ScreenRail screens={afterScreens} />
+  </section>
+
+  <section
+    class="story-beat pickup-block"
+    id="name"
+    aria-labelledby="name-title"
+    data-guide="Flight Tracked Cab is the name on the booking."
+    data-guide-mode="method"
+  >
+    <h2 class="case-section" id="name-title">Three names. One promise.</h2>
+    <p class="case-body">
+      Each one says the cab is ready when you land. Flight Tracked Cab is the name on the booking.
+    </p>
+    <ul class="pickup-names" role="list">
+      {
+        names.map((item) => (
+          <li class:list={[{ 'pickup-names__chosen': item.status }]}>
+            {item.status && <p class="pickup-names__status">{item.status}</p>}
+            <p class="case-subhead">{item.title}</p>
+            <p class="case-body">{item.line}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section
+    class="story-beat pickup-block"
+    id="review"
+    aria-labelledby="review-title"
+    data-guide="The flight number can be typed, added without typing, or found."
+    data-guide-mode="toolkit"
+  >
+    <h2 class="case-section" id="review-title">Three ways onto the review.</h2>
+    <p class="case-body">
+      The flight number can be typed, added without typing, or found when it is not at hand.
+    </p>
+    <ScreenRail screens={reviewScreens} />
+  </section>
+
+  <section
+    class="story-beat pickup-block"
+    id="web"
+    aria-labelledby="web-title"
+    data-guide="The same ask sits on the review, before pay."
+    data-guide-mode="faq"
+  >
+    <h2 class="case-section" id="web-title">The same ask, before pay.</h2>
+    <p class="case-body">The review can take the flight number, or confirm a flight already found.</p>
+    <figure class="pickup-wide">
+      <div class="pickup-wide__plate">
+        <span class="pickup-wide__mark">13</span>
+      </div>
+      <figcaption>The review on a wider screen.</figcaption>
+    </figure>
+  </section>
+
+  <section
+    class="story-beat pickup-block"
+    id="close"
+    aria-labelledby="close-title"
+    data-guide="The booking follows the flight."
+    data-guide-mode="contact"
+  >
+    <h2 class="case-section" id="close-title">The booking follows the flight.</h2>
+  </section>
+
+  <CaseNext next={next} />
+</article>
+
+<style>
+  .case-hero {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .case-lede {
+    margin-top: var(--space-2);
+  }
+
+  .pickup-block {
+    margin-top: var(--case-gap);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .pickup-block > .case-body,
+  .pickup-prose {
+    max-width: 42ch;
+  }
+
+  .pickup-prose {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .pickup-prose p {
+    font-size: var(--case-body);
+    line-height: 1.65;
+    color: var(--color-home-muted);
+    text-wrap: pretty;
+  }
+
+  .pickup-numbers {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .pickup-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .pickup-situations {
+    display: grid;
+  }
+
+  .pickup-situations li {
+    display: grid;
+    grid-template-columns: 3.25rem 1fr;
+    gap: var(--space-3);
+    align-items: baseline;
+    padding-block: var(--space-4);
+    border-top: 1px solid var(--color-home-rule);
+  }
+
+  .pickup-situations li:last-child {
+    border-bottom: 1px solid var(--color-home-rule);
+  }
+
+  .pickup-situations__index {
+    font-family: var(--font-home-display);
+    font-size: var(--case-subhead);
+    line-height: 1.1;
+    color: var(--color-home-muted);
+  }
+
+  .pickup-situations li .case-body {
+    margin-top: 0.35rem;
+  }
+
+  .pickup-move {
+    margin-top: var(--case-gap);
+    margin-inline: -48px;
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6) 48px;
+    background: var(--color-home-plate);
+  }
+
+  .pickup-move__italic {
+    font-family: var(--font-home-display);
+    font-style: italic;
+    font-size: var(--case-section);
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    color: var(--color-home-ink);
+    text-wrap: balance;
+  }
+
+  .pickup-move .case-body {
+    max-width: 36ch;
+  }
+
+  .pickup-names {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  .pickup-names li {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding: var(--space-4);
+    border-radius: 16px;
+    background: var(--color-home-plate);
+  }
+
+  .pickup-names__chosen {
+    background: transparent;
+    border: 1px solid var(--color-home-ink);
+  }
+
+  .pickup-names__status {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-home-muted);
+  }
+
+  .pickup-wide {
+    display: grid;
+    gap: 10px;
+    margin-top: var(--space-3);
+  }
+
+  .pickup-wide__plate {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1088 / 536;
+    border-radius: 16px;
+    background: #fff;
+    filter: var(--shadow-preview);
+  }
+
+  .pickup-wide__mark {
+    font-family: var(--font-home-display);
+    font-size: clamp(2.75rem, 8vw, 4rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #0a0a0a;
+  }
+
+  .pickup-wide figcaption {
+    font-size: var(--case-body);
+    line-height: 1.5;
+    color: var(--color-home-muted);
+    max-width: 28ch;
+  }
+
+  @media (min-width: 768px) {
+    .pickup-move {
+      margin-inline: -96px;
+      padding-inline: 96px;
+    }
+  }
+</style>

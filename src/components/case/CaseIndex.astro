@@ -1,0 +1,82 @@
+---
+import type { CaseIndexSection } from './case-index.ts';
+import CaseIndexBranch from './CaseIndexBranch.astro';
+
+interface Props {
+  sections: CaseIndexSection[];
+}
+
+const { sections } = Astro.props;
+---
+
+{
+  sections.length > 0 && (
+    <nav class="case-index" data-case-index aria-label="On this page">
+      <CaseIndexBranch sections={sections} markFirst />
+    </nav>
+  )
+}
+
+<script>
+  import { mountCaseIndex } from './case-index.client.ts';
+
+  let unmount = () => {};
+
+  function boot() {
+    unmount();
+    unmount = mountCaseIndex();
+  }
+
+  document.addEventListener('astro:page-load', boot);
+  boot();
+</script>
+
+<style>
+  .case-index {
+    position: fixed;
+    z-index: 80;
+    top: 0;
+    bottom: 0;
+    right: 18px;
+    height: fit-content;
+    margin-block: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 12px 4px 12px 28px;
+    color: color-mix(in srgb, var(--color-home-ink) 38%, transparent);
+  }
+
+  .case-index.is-open {
+    z-index: 92;
+    align-items: stretch;
+    width: min(17.75rem, calc(100vw - 40px));
+    max-height: min(72vh, 36rem);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 20px 22px;
+    border: 1px solid color-mix(in srgb, var(--color-home-ink) 14%, transparent);
+    border-radius: 20px;
+    background: var(--color-home-plate);
+    box-shadow: 0 24px 50px -28px rgb(0 0 0 / 0.45);
+    color: var(--color-home-muted);
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-home-ink) 28%, transparent) transparent;
+  }
+
+  :global([data-case-index-target]) {
+    scroll-margin-top: 6.5rem;
+  }
+
+  @media (max-width: 959px) {
+    .case-index {
+      display: none;
+    }
+  }
+
+  @media print {
+    .case-index {
+      display: none;
+    }
+  }
+</style>

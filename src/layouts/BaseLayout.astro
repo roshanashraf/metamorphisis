@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import Seo from '../components/Seo.astro';
+import ThemeSwitch from '../components/ThemeSwitch.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -20,8 +21,41 @@ import bricolageWoff2 from '@fontsource-variable/bricolage-grotesque/files/brico
 <!doctype html>
 <html lang="en">
   <head>
+    <script is:inline>
+      (function () {
+        function themeChoice() {
+          try {
+            var saved = localStorage.getItem('theme');
+            if (saved === 'light' || saved === 'dark') return saved;
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+          } catch (e) {}
+          return 'light';
+        }
+
+        function applyTheme(doc) {
+          var root = (doc || document).documentElement;
+          root.dataset.theme = themeChoice();
+          try {
+            var notch = localStorage.getItem('phone-notch');
+            root.dataset.phoneNotch = notch === 'without' ? 'without' : 'with';
+          } catch (e) {
+            root.dataset.phoneNotch = 'with';
+          }
+        }
+
+        applyTheme(document);
+        if (!window.__themeReady) {
+          window.__themeReady = true;
+          document.addEventListener('astro:before-swap', function (event) {
+            applyTheme(event.newDocument);
+          });
+        }
+      })();
+    </script>
     <Seo title={title} description={description} />
-    <link rel="preload" href={bricolageWoff2} as="font" type="font/woff2" crossorigin />
+    {!quiet && (
+      <link rel="preload" href={bricolageWoff2} as="font" type="font/woff2" crossorigin />
+    )}
     <ClientRouter />
   </head>
   <body class:list={{ 'page-home': quiet }}>
@@ -33,12 +67,13 @@ import bricolageWoff2 from '@fontsource-variable/bricolage-grotesque/files/brico
             unnamed
           </a>
           <div class="site-header__right">
+            <ThemeSwitch />
             <a class="site-header__navlink" href="/#work">← Work</a>
           </div>
         </header>
       )
     }
-    <main id="main" class:list={{ 'home-shell': quiet }}>
+    <main id="main" class:list={{ 'home-shell': quiet, 'case-shell': isProject }}>
       <slot />
     </main>
     {
