@@ -1,0 +1,508 @@
+---
+/** Unified flow: baseline path, trip constraint, landing vs review decision (review shipped). */
+const baseline = [
+  { n: '1', screen: 'Landing', action: 'From / to' },
+  { n: '2', screen: 'Landing', action: 'Pickup time' },
+  { n: '3', screen: '—', action: 'Search' },
+  { n: '4', screen: 'List', action: 'Pick a cab' },
+  { n: '5', screen: 'List', action: 'Select cab' },
+  { n: '6', screen: 'Review', action: 'Policies', note: 'No flight (before)' },
+  { n: '7', screen: 'Pay', action: 'Complete' },
+];
+
+const optionA = {
+  title: 'A · Landing',
+  verdict: 'Not shipped',
+  pros: ['Flight known before the list'],
+  cons: [
+    'Extra field on every airport drop',
+    'Pickup time fights landing time',
+    'Heavier form for most trips',
+  ],
+};
+
+const optionB = {
+  title: 'B · Review',
+  verdict: 'Shipped',
+  pros: [
+    'Ask only on airport pickup + tracked cab',
+    'Search stays shared for pickup and drop',
+    'Show or type flight at commitment',
+  ],
+  cons: ['Later in the funnel'],
+};
+---
+
+<figure class="touchpoint-flow" aria-labelledby="touchpoint-flow-title">
+  <p id="touchpoint-flow-title" class="touchpoint-flow__sr">
+    Airport cab booking flow: baseline path, pickup-only flight need, review touchpoint chosen over landing.
+  </p>
+
+  <div class="touchpoint-flow__plate">
+    <header class="touchpoint-flow__legend">
+      <span class="touchpoint-flow__legend-item">Current path</span>
+      <span class="touchpoint-flow__legend-item touchpoint-flow__legend-item--accent">Pickup needs flight</span>
+      <span class="touchpoint-flow__legend-item">Touchpoint decision</span>
+    </header>
+
+    <section class="touchpoint-flow__baseline" aria-label="Baseline booking path before flight collection">
+      <p class="touchpoint-flow__baseline-label">Before — fixed cab time, no flight on review</p>
+      <ol class="touchpoint-flow__track">
+        {
+          baseline.map((step, i) => (
+            <>
+              <li class="touchpoint-flow__node touchpoint-flow__node--baseline">
+                <span class="touchpoint-flow__node-n">{step.n}</span>
+                <span class="touchpoint-flow__node-screen">{step.screen}</span>
+                <span class="touchpoint-flow__node-action">{step.action}</span>
+                {step.note ? <span class="touchpoint-flow__node-flag">{step.note}</span> : null}
+              </li>
+              {i < baseline.length - 1 ? <li class="touchpoint-flow__connector" aria-hidden="true" /> : null}
+            </>
+          ))
+        }
+      </ol>
+    </section>
+
+    <div class="touchpoint-flow__constraint">
+      <p class="touchpoint-flow__constraint-text">
+        <strong>Airport drop</strong> — same path, no flight field.
+        <span class="touchpoint-flow__constraint-sep" aria-hidden="true">·</span>
+        <strong>Airport pickup</strong> — flight required for Flight Tracked Cab.
+      </p>
+    </div>
+
+    <section class="touchpoint-flow__decision" aria-label="Where to collect the flight number">
+      <div class="touchpoint-flow__diamond-wrap">
+        <p class="touchpoint-flow__diamond">Where to collect flight?</p>
+      </div>
+
+      <span class="touchpoint-flow__stem" aria-hidden="true" />
+
+      <div class="touchpoint-flow__branch">
+        <article class="touchpoint-flow__card touchpoint-flow__card--rejected">
+          <header class="touchpoint-flow__card-head">
+            <h3 class="touchpoint-flow__card-title">{optionA.title}</h3>
+            <p class="touchpoint-flow__card-verdict">{optionA.verdict}</p>
+          </header>
+          <ul class="touchpoint-flow__list">
+            {
+              optionA.pros.map((line) => (
+                <li class="touchpoint-flow__list-item touchpoint-flow__list-item--pro">{line}</li>
+              ))
+            }
+            {
+              optionA.cons.map((line) => (
+                <li class="touchpoint-flow__list-item touchpoint-flow__list-item--con">{line}</li>
+              ))
+            }
+          </ul>
+          <p class="touchpoint-flow__card-foot">Inserts on landing — before search</p>
+        </article>
+
+        <article class="touchpoint-flow__card touchpoint-flow__card--chosen">
+          <header class="touchpoint-flow__card-head">
+            <h3 class="touchpoint-flow__card-title">{optionB.title}</h3>
+            <p class="touchpoint-flow__card-verdict touchpoint-flow__card-verdict--chosen">{optionB.verdict}</p>
+          </header>
+          <ul class="touchpoint-flow__list">
+            {
+              optionB.pros.map((line) => (
+                <li class="touchpoint-flow__list-item touchpoint-flow__list-item--pro">{line}</li>
+              ))
+            }
+            {
+              optionB.cons.map((line) => (
+                <li class="touchpoint-flow__list-item touchpoint-flow__list-item--con">{line}</li>
+              ))
+            }
+          </ul>
+          <p class="touchpoint-flow__card-foot">After select cab — on review, before pay</p>
+        </article>
+      </div>
+
+      <div class="touchpoint-flow__outcome">
+        <span class="touchpoint-flow__connector touchpoint-flow__connector--down" aria-hidden="true" />
+        <div class="touchpoint-flow__node touchpoint-flow__node--outcome">
+          <span class="touchpoint-flow__node-n">6</span>
+          <span class="touchpoint-flow__node-screen">Review</span>
+          <span class="touchpoint-flow__node-action">Flight number</span>
+          <span class="touchpoint-flow__node-flag touchpoint-flow__node-flag--live">Shipped touchpoint</span>
+        </div>
+        <span class="touchpoint-flow__connector" aria-hidden="true" />
+        <div class="touchpoint-flow__node touchpoint-flow__node--outcome">
+          <span class="touchpoint-flow__node-n">7</span>
+          <span class="touchpoint-flow__node-screen">Pay</span>
+          <span class="touchpoint-flow__node-action">Complete</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <figcaption class="case-body">
+    One spine for every trip. Flight ask on review for pickup—not on landing.
+  </figcaption>
+</figure>
+
+<style>
+  .touchpoint-flow {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+  }
+
+  .touchpoint-flow__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .touchpoint-flow__plate {
+    display: grid;
+    gap: var(--space-5);
+    padding: clamp(var(--space-4), 4vw, var(--space-6));
+    border-radius: clamp(20px, 4vw, 40px);
+    background: var(--color-home-bg);
+    border: 1px solid var(--color-home-rule);
+    box-shadow: 0 1px 0 rgba(var(--color-home-ink-rgb), 0.04);
+  }
+
+  .touchpoint-flow__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+  }
+
+  .touchpoint-flow__legend-item {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-home-muted);
+  }
+
+  .touchpoint-flow__legend-item--accent {
+    color: var(--color-home-ink);
+  }
+
+  .touchpoint-flow__legend-item--accent::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 0.4rem;
+    border-radius: 50%;
+    background: var(--color-home-ink);
+    vertical-align: middle;
+  }
+
+  .touchpoint-flow__baseline {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-radius: 20px;
+    background: var(--color-home-plate);
+  }
+
+  .touchpoint-flow__baseline-label {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--color-home-muted);
+    text-wrap: pretty;
+  }
+
+  .touchpoint-flow__track {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 0 0 var(--space-2);
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  .touchpoint-flow__connector {
+    flex: 0 0 1.25rem;
+    align-self: center;
+    height: 2px;
+    margin-inline: 0.15rem;
+    background: linear-gradient(90deg, var(--color-home-rule), var(--color-home-muted));
+    list-style: none;
+  }
+
+  .touchpoint-flow__connector--down {
+    flex: none;
+    width: 2px;
+    height: 1.75rem;
+    margin: 0 auto;
+    background: linear-gradient(180deg, var(--color-home-muted), var(--color-home-rule));
+  }
+
+  .touchpoint-flow__node {
+    flex: 0 0 auto;
+    display: grid;
+    gap: 0.2rem;
+    min-width: 6.5rem;
+    max-width: 8.5rem;
+    padding: var(--space-3);
+    border-radius: 14px;
+    border: 1px solid var(--color-home-rule);
+    background: var(--color-home-bg);
+    text-align: left;
+  }
+
+  .touchpoint-flow__node--baseline {
+    opacity: 0.92;
+  }
+
+  .touchpoint-flow__node--outcome {
+    min-width: 7.5rem;
+    border-color: var(--color-home-ink);
+  }
+
+  .touchpoint-flow__node-n {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+    color: var(--color-home-muted);
+  }
+
+  .touchpoint-flow__node-screen {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-home-muted);
+  }
+
+  .touchpoint-flow__node-action {
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    font-weight: 500;
+    color: var(--color-home-ink);
+    text-wrap: pretty;
+  }
+
+  .touchpoint-flow__node-flag {
+    margin-top: 0.15rem;
+    font-size: 0.625rem;
+    line-height: 1.35;
+    color: var(--color-home-muted);
+  }
+
+  .touchpoint-flow__node-flag--live {
+    font-weight: 500;
+    color: var(--color-home-ink);
+  }
+
+  .touchpoint-flow__constraint {
+    padding-inline: var(--space-1);
+  }
+
+  .touchpoint-flow__constraint-text {
+    margin: 0;
+    font-size: var(--case-body);
+    line-height: 1.55;
+    color: var(--color-home-muted);
+    text-wrap: pretty;
+    text-align: center;
+  }
+
+  .touchpoint-flow__constraint-sep {
+    margin-inline: 0.35rem;
+    opacity: 0.5;
+  }
+
+  .touchpoint-flow__decision {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: center;
+  }
+
+  .touchpoint-flow__diamond-wrap {
+    display: grid;
+    place-items: center;
+    padding: var(--space-3) var(--space-5);
+    border: 1px solid var(--color-home-ink);
+    border-radius: 4px;
+    transform: rotate(-2deg);
+    background: var(--color-home-bg);
+  }
+
+  .touchpoint-flow__diamond {
+    margin: 0;
+    font-family: var(--font-home-display);
+    font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--color-home-ink);
+    text-wrap: balance;
+    text-align: center;
+  }
+
+  .touchpoint-flow__stem {
+    display: block;
+    width: 2px;
+    height: 1.5rem;
+    background: var(--color-home-rule);
+  }
+
+  .touchpoint-flow__branch {
+    display: grid;
+    gap: var(--space-4);
+    width: 100%;
+    position: relative;
+  }
+
+  .touchpoint-flow__branch::before {
+    content: '';
+    position: absolute;
+    top: -0.75rem;
+    left: 15%;
+    right: 15%;
+    height: 2px;
+    background: var(--color-home-rule);
+  }
+
+  @media (min-width: 720px) {
+    .touchpoint-flow__branch {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+
+    .touchpoint-flow__branch::before {
+      top: 0;
+      left: 50%;
+      right: auto;
+      width: 2px;
+      height: 1.25rem;
+      transform: translateX(-50%);
+    }
+  }
+
+  .touchpoint-flow__card {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-radius: 16px;
+    border: 1px solid var(--color-home-rule);
+    background: var(--color-home-plate);
+  }
+
+  .touchpoint-flow__card--rejected {
+    opacity: 0.78;
+    border-style: dashed;
+  }
+
+  .touchpoint-flow__card--chosen {
+    opacity: 1;
+    border-color: var(--color-home-ink);
+    background: var(--color-home-bg);
+    box-shadow: 0 12px 40px -28px rgba(var(--color-home-ink-rgb), 0.35);
+  }
+
+  .touchpoint-flow__card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .touchpoint-flow__card-title {
+    margin: 0;
+    font-family: var(--font-home-display);
+    font-size: var(--case-subhead);
+    line-height: 1.1;
+    font-weight: 400;
+    color: var(--color-home-ink);
+  }
+
+  .touchpoint-flow__card-verdict {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-home-muted);
+  }
+
+  .touchpoint-flow__card-verdict--chosen {
+    color: var(--color-home-ink);
+  }
+
+  .touchpoint-flow__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .touchpoint-flow__list-item {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--color-home-muted);
+    padding-left: 1.1rem;
+    position: relative;
+    text-wrap: pretty;
+  }
+
+  .touchpoint-flow__list-item--pro::before {
+    content: '+';
+    position: absolute;
+    left: 0;
+    color: var(--color-home-ink);
+    font-weight: 500;
+  }
+
+  .touchpoint-flow__list-item--con::before {
+    content: '−';
+    position: absolute;
+    left: 0;
+    color: var(--color-home-muted);
+  }
+
+  .touchpoint-flow__card-foot {
+    margin: 0;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-home-rule);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--color-home-muted);
+  }
+
+  .touchpoint-flow__outcome {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.15rem 0;
+    width: 100%;
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--color-home-rule);
+  }
+
+  .touchpoint-flow__outcome .touchpoint-flow__connector {
+    flex: 0 0 1.5rem;
+  }
+
+  @media (min-width: 720px) {
+    .touchpoint-flow__outcome {
+      flex-wrap: nowrap;
+    }
+  }
+
+  .touchpoint-flow > figcaption {
+    max-width: 42ch;
+  }
+</style>

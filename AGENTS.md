@@ -1,3 +1,7 @@
+## Handbook
+
+Read [handbook/README.md](handbook/README.md) before reworking this site. Copy terminal commands from [handbook/commands.md](handbook/commands.md). File map: [handbook/map.md](handbook/map.md). Common edits: [handbook/rework.md](handbook/rework.md).
+
 ## Development
 
 When starting the dev server, use background mode:

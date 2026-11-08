@@ -29,18 +29,31 @@ const { defaultLine } = Astro.props;
 </div>
 
 <script>
+  import { readCompanionEnabled } from './companion-enabled.ts';
   import { mountCaseCompanion } from './case-companion.client.ts';
 
   let unmount = () => {};
 
   function boot() {
     unmount();
-    if (!document.querySelector('[data-case-companion]')) return;
+    const root = document.querySelector('[data-case-companion]');
+    if (!(root instanceof HTMLElement)) return;
+
+    const enabled = readCompanionEnabled();
+    root.hidden = !enabled;
+
+    if (!enabled) return;
+
     unmount = mountCaseCompanion();
+  }
+
+  function onCompanionEnabled() {
+    boot();
   }
 
   document.addEventListener('astro:page-load', boot);
   document.addEventListener('astro:before-swap', () => unmount());
+  window.addEventListener('companion-enabled', onCompanionEnabled);
   boot();
 </script>
 
@@ -208,5 +221,9 @@ const { defaultLine } = Astro.props;
     .case-companion__bubble {
       transition: none;
     }
+  }
+
+  :global(html[data-companion-enabled='off']) .case-companion {
+    display: none !important;
   }
 </style>

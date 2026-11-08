@@ -2,6 +2,8 @@
 
 Temporary-brand UX portfolio. Static **Astro** site with **MDX** content collections and CSS-first motion. Deploy target: **Cloudflare Pages** (free tier).
 
+How the code fits together, and how to change it later: [handbook/README.md](handbook/README.md). Copy-paste terminal commands: [handbook/commands.md](handbook/commands.md).
+
 ## Local
 
 ```bash

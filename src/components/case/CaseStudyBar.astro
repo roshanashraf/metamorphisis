@@ -37,28 +37,52 @@ import ThemeSwitch from '../ThemeSwitch.astro';
   </div>
   <ThemeSwitch />
   <label class="case-settings__switch">
-    <span>Notch</span>
-    <select data-phone-notch aria-label="Phone notch">
-      <option value="with">With</option>
-      <option value="without">Without</option>
-    </select>
-  </label>
-  <label class="case-settings__switch">
     <span>Guide</span>
+    <input type="checkbox" data-companion-enabled aria-label="Show scroll guide" />
+  </label>
+  <label class="case-settings__switch case-settings__switch--sub" data-companion-variant-row>
+    <span>Guide style</span>
     <select data-companion-variant aria-label="Companion style">
       <option value="dots">Dots</option>
       <option value="roshan">Roshan</option>
+    </select>
+  </label>
+  <label class="case-settings__switch">
+    <span>Notch</span>
+    <select data-phone-notch aria-label="Phone notch">
+      <option value="with">With</option>
+      <option value="without" selected>Without</option>
     </select>
   </label>
 </dialog>
 
 <script>
   import {
+    applyCompanionEnabled,
+    readCompanionEnabled,
+    saveCompanionEnabled,
+  } from './companion-enabled.ts';
+  import {
     applyCompanionVariant,
     normalizeCompanionVariant,
     readCompanionVariant,
     saveCompanionVariant,
   } from './companion-variant.ts';
+
+  function setGuideStyleEnabled(enabled: boolean) {
+    const row = document.querySelector('[data-companion-variant-row]');
+    const select = document.querySelector('[data-companion-variant]');
+    if (row instanceof HTMLElement) row.toggleAttribute('data-disabled', !enabled);
+    if (select instanceof HTMLSelectElement) select.disabled = !enabled;
+  }
+
+  function syncCompanionEnabled() {
+    const input = document.querySelector('[data-companion-enabled]');
+    const enabled = readCompanionEnabled();
+    applyCompanionEnabled(enabled);
+    if (input instanceof HTMLInputElement) input.checked = enabled;
+    setGuideStyleEnabled(enabled);
+  }
 
   function syncSelect() {
     const select = document.querySelector('[data-companion-variant]');
@@ -70,6 +94,16 @@ import ThemeSwitch from '../ThemeSwitch.astro';
 
   function onSelectChange(event: Event) {
     const target = event.target;
+    if (!(target instanceof HTMLInputElement) && !(target instanceof HTMLSelectElement)) return;
+
+    if (target instanceof HTMLInputElement && target.matches('[data-companion-enabled]')) {
+      const enabled = target.checked;
+      saveCompanionEnabled(enabled);
+      applyCompanionEnabled(enabled);
+      setGuideStyleEnabled(enabled);
+      return;
+    }
+
     if (!(target instanceof HTMLSelectElement)) return;
 
     if (target.matches('[data-phone-notch]')) {
@@ -95,7 +129,7 @@ import ThemeSwitch from '../ThemeSwitch.astro';
     } catch {
       /* ignore */
     }
-    return 'with';
+    return 'without';
   }
 
   function applyNotch(value: string) {
@@ -190,6 +224,7 @@ import ThemeSwitch from '../ThemeSwitch.astro';
       settingsBound = true;
     }
     bindDialog();
+    syncCompanionEnabled();
     syncSelect();
     syncNotch();
     setExpanded(false);
@@ -295,6 +330,76 @@ import ThemeSwitch from '../ThemeSwitch.astro';
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--color-home-muted);
+  }
+
+  .case-settings__switch select:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .case-settings__switch--sub {
+    margin-top: 10px;
+    padding-left: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .case-settings__switch[data-disabled] {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .case-settings :global(.theme-switch) {
+    color: var(--color-home-ink);
+    margin-bottom: 2px;
+  }
+
+  .case-settings :global(.theme-switch__option:focus-visible) {
+    outline-color: var(--color-home-ink);
+  }
+
+  html:not([data-theme='dark']) .case-settings :global(.theme-switch__option[data-theme-choice='light']),
+  html[data-theme='dark'] .case-settings :global(.theme-switch__option[data-theme-choice='dark']) {
+    background: var(--color-home-ink);
+    color: var(--color-home);
+  }
+
+  .case-settings__switch input[type='checkbox'] {
+    width: 2.5rem;
+    height: 1.4rem;
+    margin: 0;
+    appearance: none;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--color-home-ink) 16%, transparent);
+    background: color-mix(in srgb, var(--color-home-ink) 10%, transparent);
+    position: relative;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-soft);
+  }
+
+  .case-settings__switch input[type='checkbox']::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--color-home-ink);
+    transition: transform var(--dur-fast) var(--ease-soft);
+  }
+
+  .case-settings__switch input[type='checkbox']:checked {
+    background: var(--color-home-ink);
+  }
+
+  .case-settings__switch input[type='checkbox']:checked::after {
+    transform: translateX(1.1rem);
+    background: var(--color-home);
+  }
+
+  .case-settings__switch input[type='checkbox']:focus-visible {
+    outline: 2px solid var(--color-home-ink);
+    outline-offset: 2px;
   }
 
   .case-settings__switch select {

@@ -19,7 +19,7 @@ import bricolageWoff2 from '@fontsource-variable/bricolage-grotesque/files/brico
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light" data-phone-notch="without" data-companion-enabled="off">
   <head>
     <script is:inline>
       (function () {
@@ -27,7 +27,6 @@ import bricolageWoff2 from '@fontsource-variable/bricolage-grotesque/files/brico
           try {
             var saved = localStorage.getItem('theme');
             if (saved === 'light' || saved === 'dark') return saved;
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
           } catch (e) {}
           return 'light';
         }
@@ -37,9 +36,15 @@ import bricolageWoff2 from '@fontsource-variable/bricolage-grotesque/files/brico
           root.dataset.theme = themeChoice();
           try {
             var notch = localStorage.getItem('phone-notch');
-            root.dataset.phoneNotch = notch === 'without' ? 'without' : 'with';
+            root.dataset.phoneNotch = notch === 'with' ? 'with' : 'without';
           } catch (e) {
-            root.dataset.phoneNotch = 'with';
+            root.dataset.phoneNotch = 'without';
+          }
+          try {
+            var guide = localStorage.getItem('companion-enabled');
+            root.dataset.companionEnabled = guide === 'on' ? 'on' : 'off';
+          } catch (e) {
+            root.dataset.companionEnabled = 'off';
           }
         }
 
