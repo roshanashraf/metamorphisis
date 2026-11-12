@@ -26,12 +26,11 @@ MakeMyTrip **already knew flight times**. I helped tie the cab to **when you lan
 1. **Hook** — Cab time and flight time are not the same thing.
 2. **Before** — Old path: no flight on review, fixed cab time.
 3. **Numbers** — Most trips happen. When they fail, the traveller usually cancels—not the company saying no.
-4. **Problem** — Flight moves. Cab time stays. Bad outcomes follow.
-5. **Four cases** — Delay before takeoff, land early, delay in the air, “pick me up now.”
-6. **Turn** — We already track flights. The cab can wait on the flight.
+4. **Problem** — Flight moves. Cab time stays. Four cases where timing breaks.
+5. **Turn** — We already track flights. The cab can wait on the flight.
 7. **Touchpoint** — Landing vs review for flight number; parallel pros/cons; review shipped.
 8. **Book** — Special option on the list. Flight on the review screen.
-9. **After book** — On time, delayed, after the ride—the flight stays visible.
+9. **Post booking** — On time, delayed, on the trip—the flight stays visible.
 10. **Add a flight** — Type it, pick it, or search for it.
 11. **Name** — We picked Flight Tracked Cab.
 12. **Web** — Same flight ask before pay.
@@ -58,18 +57,16 @@ MakeMyTrip **already knew flight times**. I helped tie the cab to **when you lan
 | 1 | `pickups` | Better airport pickups |
 | 2 | `flow` | How booking worked before |
 | 3 | `numbers` | Most trips work. When they don’t, people often cancel themselves. |
-| 4 | `open` | The flight can move. The cab time could not. |
-| 5 | `situations` | Four times that goes wrong |
-| 6 | `move` | We already track the flight. |
-| 7 | `touchpoint` | Where to ask for the flight |
-| 8 | `on-booking` | A cab that waits on your flight |
-| 9 | `after` | The flight stays on the trip |
-| 10 | `review` | Three ways to add your flight |
-| 11 | `name` | Three names. One on the booking. |
-| 12 | `web` | Same ask on web before you pay |
-| 13 | `close` | The booking follows the flight |
+| 4 | `open` | The flight can move. The cab time could not. (+ Four times that goes wrong) |
+| 5 | `move` | We already track the flight. |
+| 6 | `touchpoint` | Where to ask for the flight |
+| 7 | `on-booking` | Highlight Flight Tracked Cab on the listing |
+| 8 | `flight-info` | Flight info collection |
+| 9 | `post-booking` | Post booking experience |
+| 10 | `web` | Same ask on web before you pay |
+| 11 | `close` | The booking follows the flight |
 
-**Note:** Section `flow` sits right after the hook. It should describe the **old** path only. New behavior lives in `on-booking` and `after`.
+**Note:** Section `flow` sits right after the hook. It should describe the **old** path only. New behavior lives in `on-booking`, `flight-info`, and `post-booking`.
 
 ---
 
@@ -110,15 +107,22 @@ seo:
 
 **H2:** Old Experience
 
-| Mark | Caption |
-|------|---------|
-| 1 | Start—search for airport cab. |
-| 2 | Pick a place. |
-| 2.1 | Shorter place list. |
-| 2.2 | Pick a place. |
-| 3 | Loading cabs. |
-| 4 | Cab list. |
-| 5 | Review—before we ask for a flight. |
+| # | Caption |
+|---|---------|
+| 1 | Airport transfers—search with no flight on the form. |
+| 2 | Pick the airport—favorites and search. |
+| 3 | Terminal search results. |
+| 4 | Pick drop-off—with terminal fixed as from. |
+| 5 | Drop-off results. |
+| 6 | Route set—trip start is already on the search. |
+| 7 | Pickup time—you choose when the cab should arrive. |
+| 8 | Search—time locked in before results. |
+| 9 | Loading cabs. |
+| 10 | Cab list—flat view. |
+| 11 | Cab list—by category. |
+| 12 | Review and pay—still no flight on the booking. |
+
+Assets: `src/assets/projects/airport-pickups/flow-01` … `flow-12`.
 
 ---
 
@@ -155,7 +159,7 @@ seo:
 
 ---
 
-### Problem — `open`
+### Problem — `open` (includes former `situations`)
 
 **H2:** The flight can move. The cab time could not.
 
@@ -165,13 +169,9 @@ You book a cab for a set time. The flight lands on its own schedule.
 
 When those two don’t match, people cancel, wait, or the driver cancels.
 
-**Scroll line:** Two times: flight moves, cab time stayed at booking.
+**H3:** Four times that goes wrong
 
----
-
-### Four cases — `situations`
-
-**Scroll line:** Four ways the times split—and what people do.
+**Scroll line:** Flight moves; cab time stayed—four splits and what people do.
 
 | # | What happens | What people do |
 |---|--------------|----------------|
@@ -184,11 +184,11 @@ When those two don’t match, people cancel, wait, or the driver cancels.
 
 ### Turn — `move`
 
-**Small label:** The change
+**UI:** Mint callout (`--color-airport-mint`) — serif headline + italic subline on one rounded banner; body copy below.
 
 **H2:** We already track the flight.
 
-**Big line:** So the cab can wait on landing.
+**Italic line:** So the cab can wait on landing.
 
 **Body:**
 
@@ -220,81 +220,60 @@ The cab no longer only listens to the time you picked at checkout. It listens to
 
 ### Book — `on-booking`
 
-**H2:** A cab that waits on your flight
+**H2:** Highlight Flight Tracked Cab as a USP on the listing page
 
 **Body:**
 
-On the cab list, one choice is tied to your flight.
+On airport pickup, the list leads with Flight Tracked Cab—cab ready whenever you land—not a label hidden on one vehicle. Tap info for a short sheet: add your flight on review, and we track it so pickup follows landing.
 
-On review, if MakeMyTrip already knows your flight, it shows up. If not, we ask for the number.
+**Scroll line:** USP on the list—not one row. Info sets up review.
 
-**Scroll line:** One list choice waits on the flight. Review shows it or asks for it.
+| # | Caption |
+|---|---------|
+| 1 | Listing—Flight Tracked Cab as the USP above the cabs. |
+| 2 | Info—add flight on review; we track and meet you when you land. |
 
-| Mark | Caption | Notice |
-|------|---------|--------|
-| 6 | The list. One cab tied to the flight. | Flight Tracked Cab (or same label) |
-| 7 | Review asks for the flight. | When we don’t know it yet |
-| 8 | Flight is on the booking. | Before you pay |
+Assets: `booking-listing-flight-tracked-usp.png`, `booking-flight-tracked-bottomsheet.jpg`.
 
 ---
 
-### After you book — `after`
+### Flight info — `flight-info`
 
-**H2:** The flight stays on the trip
+**H2:** Flight info collection
 
 **Body:**
 
-If the flight is on time, pickup time holds.
+On review, connect your flight: enter a number or PNR, or follow **Find your flight** when you do not have it handy. When you already have a MakeMyTrip flight the same day to this airport, we surface it with **Add flight**—no typing.
 
-If the flight is late, landing time moves with it.
+**Scroll line:** Type, find, or add the flight we already know.
 
-After the ride, the trip still shows the flight was tracked.
+**Figure:** `FlightInfoCollectionFlow.astro` — primary row (type → sync → flight card), fork quote *Who would even remember flight number??*, alternate row (departure airport → choose → adding).
 
-**Scroll line:** On time, pickup holds. Delay moves landing with the flight.
+| Path | Step | Caption |
+|------|------|---------|
+| Primary | 1–5 | Empty → type → adding → synced → flight on booking |
+| Alternate | 1–3 | Departure airport → choose flight → adding |
+| Prefill | 1 | Confirm your flight—then Add flight |
+
+Assets: `review-01` … `review-09`.
+
+---
+
+### Post booking — `post-booking`
+
+**H2:** Post booking experience
+
+**Body:**
+
+After you pay, timing follows the flight—not the time you picked at checkout. On time, pickup holds. Delayed, landing moves with it. The trip keeps showing the flight was tracked.
+
+**Scroll line:** After pay, pickup follows the flight—not the clock.
 
 | Mark | Caption |
 |------|---------|
 | 9 | On time—the pickup holds. |
 | 9.1 | Delayed—landing moves with the flight. |
 | 9.2 | After the ride—it still says the flight was tracked. |
-
----
-
-### Add a flight — `review`
-
-**H2:** Three ways to add your flight
-
-**Body:**
-
-Type the number. Add it without typing. Or search when you don’t have it handy.
-
-**Scroll line:** Type it, add it, or find it.
-
-| Mark | Caption |
-|------|---------|
-| 10 | Type the flight number. |
-| 11 | Add without typing. |
-| 12 | Find it when you don’t have the number. |
-
-**Optional:** People show up with different info—review had to be easy, not only the list label.
-
----
-
-### Name — `name`
-
-**H2:** Three names. One on the booking.
-
-**Body:**
-
-All three say: cab ready when you land. We put **Flight Tracked Cab** on the booking.
-
-| Name | Line | Used? |
-|------|------|-------|
-| Flight Sync | Sync pickup with landing. | No |
-| Flight Connect | Cab ready when you land. | No |
-| **Flight Tracked Cab** | Cab ready when you land. | **Yes** |
-
-**Scroll line:** We called it Flight Tracked Cab on the booking.
 
 ---
 
@@ -308,7 +287,9 @@ On a wide screen you can type the flight or confirm one we already found.
 
 **Scroll line:** Web review—same flight ask before pay.
 
-**Figure:** Wide review (mark **13**).
+**Figure:** `web-review-flight-tracked.jpg` — desktop review with Flight tracked cabs and enter flight number.
+
+**Caption:** Web review—same flight ask before you pay.
 
 ---
 
@@ -322,7 +303,7 @@ On a wide screen you can type the flight or confirm one we already found.
 
 **For you (shorten for site if needed):**
 
-- **Shipped:** Flight cab on list, flight on review, trip states, name, web review.
+- **Shipped:** Flight cab on list, flight on review, trip states, web review.
 - **Not proven:** Fewer cancels in the 20% / 85% buckets; driver behavior; tricky flight cases.
 - **Lesson:** `[TBD — when two times exist, show both in the trip—not only checkout.]`
 
@@ -335,14 +316,12 @@ On a wide screen you can type the flight or confirm one we already found.
 | `pickups` | The cab had a time. The flight did not. |
 | `flow` | Before, review never moved cab time with the flight. |
 | `numbers` | Most cabs happen. When they don’t, travellers cancel more than ops says no. |
-| `open` | Flight moves; cab time stayed at booking. |
-| `situations` | Four splits—and what people do. |
+| `open` | Flight moves; cab time stayed—four splits and what people do. |
 | `move` | We already tracked flights—I tied the cab to landing. |
 | `touchpoint` | Landing would burden every trip—review fits pickup-only. |
-| `on-booking` | One list choice waits on the flight; review shows or asks. |
-| `after` | On time, pickup holds; delay moves landing. |
-| `review` | Type, add, or find the flight. |
-| `name` | We named it Flight Tracked Cab. |
+| `on-booking` | USP on the list—not one row. Info sets up review. |
+| `flight-info` | Type, find, or add the flight we already know. |
+| `post-booking` | After pay, pickup follows the flight—not the clock. |
 | `web` | Same flight ask on web before pay. |
 | `close` | The booking follows the flight. |
 

@@ -63,13 +63,31 @@ const dots = Array.from({ length: dotCount }, (_, i) => i);
         </p>
       </div>
 
-      <div class="pickup-numbers-scrolly__grid-wrap" aria-hidden="true">
-        <div class="pickup-numbers-scrolly__band"></div>
-        <div class="pickup-numbers-scrolly__grid">
-          {dots.map((i) => (
-            <span class="pickup-numbers-scrolly__dot" data-i={i} />
-          ))}
+      <div class="pickup-numbers-scrolly__viz">
+        <div class="pickup-numbers-scrolly__grid-wrap" aria-hidden="true">
+          <div class="pickup-numbers-scrolly__band"></div>
+          <div class="pickup-numbers-scrolly__grid">
+            {dots.map((i) => (
+              <span class="pickup-numbers-scrolly__dot" data-i={i} />
+            ))}
+          </div>
         </div>
+        <ul class="pickup-numbers-scrolly__legend" aria-hidden="true">
+          <li class="pickup-numbers-scrolly__legend-item">
+            <span class="pickup-numbers-scrolly__legend-dot pickup-numbers-scrolly__legend-dot--ok" />
+            <span class="pickup-numbers-scrolly__legend-body">
+              <span class="pickup-numbers-scrolly__legend-value">80%</span>
+              <span class="pickup-numbers-scrolly__legend-label">Trip happened</span>
+            </span>
+          </li>
+          <li class="pickup-numbers-scrolly__legend-item">
+            <span class="pickup-numbers-scrolly__legend-dot pickup-numbers-scrolly__legend-dot--no" />
+            <span class="pickup-numbers-scrolly__legend-body">
+              <span class="pickup-numbers-scrolly__legend-value">20%</span>
+              <span class="pickup-numbers-scrolly__legend-label">Trip did not happen</span>
+            </span>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -105,6 +123,8 @@ const dots = Array.from({ length: dotCount }, (_, i) => i);
   .pickup-numbers-scrolly__static {
     display: grid;
     gap: var(--space-6);
+    width: min(100%, 36rem);
+    margin-inline: auto;
   }
 
   .pickup-numbers-scrolly {
@@ -130,25 +150,31 @@ const dots = Array.from({ length: dotCount }, (_, i) => i);
     .pickup-numbers-scrolly__layout {
       display: grid;
       grid-template-columns: 1fr;
+      justify-items: center;
+      width: 100%;
     }
 
     .pickup-numbers-scrolly__steps {
       grid-column: 1;
       grid-row: 1;
+      width: 100%;
     }
 
     .pickup-numbers-scrolly__stage {
       grid-column: 1;
       grid-row: 1;
-      position: sticky;
-      top: 3rem;
+      justify-self: center;
+      width: min(100%, 52rem);
       z-index: 1;
       box-sizing: border-box;
+      position: sticky;
+      top: 3rem;
       height: calc(100dvh - 3rem);
       padding-block: var(--space-6);
+      padding-inline: var(--space-2);
       display: grid;
-      grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
-      gap: var(--space-5);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(1.75rem, 4.5vw, 3.5rem);
       align-items: center;
       pointer-events: none;
     }
@@ -185,6 +211,9 @@ const dots = Array.from({ length: dotCount }, (_, i) => i);
       display: grid;
       gap: var(--space-3);
       align-content: center;
+      justify-self: end;
+      width: 100%;
+      max-width: 16rem;
       min-height: 8rem;
     }
 
@@ -248,10 +277,74 @@ const dots = Array.from({ length: dotCount }, (_, i) => i);
       color: var(--color-home-ink);
     }
 
+    .pickup-numbers-scrolly__viz {
+      display: grid;
+      gap: var(--space-4);
+      justify-self: center;
+      width: min(100%, 18.5rem);
+    }
+
     .pickup-numbers-scrolly__grid-wrap {
       position: relative;
-      width: min(100%, 22rem);
-      justify-self: end;
+      width: 100%;
+    }
+
+    .pickup-numbers-scrolly__legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      opacity: 0;
+      transition: opacity var(--dur-med) var(--ease-soft);
+    }
+
+    .pickup-numbers-scrolly[data-active-step='2'] .pickup-numbers-scrolly__legend,
+    .pickup-numbers-scrolly[data-active-step='3'] .pickup-numbers-scrolly__legend,
+    .pickup-numbers-scrolly[data-active-step='4'] .pickup-numbers-scrolly__legend {
+      opacity: 1;
+    }
+
+    .pickup-numbers-scrolly__legend-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.5rem;
+      align-items: start;
+    }
+
+    .pickup-numbers-scrolly__legend-dot {
+      width: 0.65rem;
+      height: 0.65rem;
+      margin-top: 0.35rem;
+      border-radius: 50%;
+    }
+
+    .pickup-numbers-scrolly__legend-dot--ok {
+      background: var(--color-airport-mint);
+    }
+
+    .pickup-numbers-scrolly__legend-dot--no {
+      background: color-mix(in srgb, var(--color-home-ink) 72%, var(--color-home-plate));
+    }
+
+    .pickup-numbers-scrolly__legend-body {
+      display: grid;
+      gap: 0.15rem;
+    }
+
+    .pickup-numbers-scrolly__legend-value {
+      font-family: var(--font-home-display);
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--color-home-ink);
+    }
+
+    .pickup-numbers-scrolly__legend-label {
+      font-size: 0.8125rem;
+      line-height: 1.35;
+      color: var(--color-home-muted);
     }
 
     .pickup-numbers-scrolly__band {
@@ -295,7 +388,12 @@ const dots = Array.from({ length: dotCount }, (_, i) => i);
     .pickup-numbers-scrolly[data-active-step='2'] .pickup-numbers-scrolly__dot:nth-child(-n + 80),
     .pickup-numbers-scrolly[data-active-step='3'] .pickup-numbers-scrolly__dot:nth-child(-n + 80),
     .pickup-numbers-scrolly[data-active-step='4'] .pickup-numbers-scrolly__dot:nth-child(-n + 80) {
-      background: var(--color-green);
+      background: var(--color-airport-mint);
+    }
+
+    .pickup-numbers-scrolly[data-active-step='2'] .pickup-numbers-scrolly__dot:nth-child(n + 81),
+    .pickup-numbers-scrolly[data-active-step='3'] .pickup-numbers-scrolly__dot:nth-child(n + 81):nth-child(-n + 100) {
+      background: color-mix(in srgb, var(--color-home-ink) 72%, var(--color-home-plate));
     }
 
     .pickup-numbers-scrolly[data-active-step='4'] .pickup-numbers-scrolly__dot:nth-child(n + 81):nth-child(-n + 97) {

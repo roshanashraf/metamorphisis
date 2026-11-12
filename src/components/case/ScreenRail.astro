@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import PhoneMockup from './PhoneMockup.astro';
 
@@ -52,20 +51,26 @@ const single = screens.length === 1 ? screens[0] : null;
         {
           screens.map((screen, index) => (
             <figure class="screen-rail__item">
-              {screen.mark && !screen.src && !screen.video ? (
-                <PhoneMockup mark={screen.mark} alt={screen.alt} eager={eager && index === 0} />
-              ) : (
-                screen.src && (
-                  <Image
-                    src={screen.src}
-                    alt={screen.alt}
-                    widths={[360, 560, 720]}
-                    sizes="(max-width: 720px) 72vw, 280px"
-                    loading={eager && index === 0 ? 'eager' : 'lazy'}
-                    class="screen-rail__img"
-                  />
-                )
-              )}
+              {screen.src || screen.video ? (
+                <PhoneMockup
+                  image={screen.src}
+                  video={screen.video}
+                  poster={screen.poster}
+                  alt={screen.alt}
+                  mark={screen.mark}
+                  width={width}
+                  height={height}
+                  eager={eager && index === 0}
+                />
+              ) : screen.mark ? (
+                <PhoneMockup
+                  mark={screen.mark}
+                  alt={screen.alt}
+                  width={width}
+                  height={height}
+                  eager={eager && index === 0}
+                />
+              ) : null}
               <figcaption>{screen.caption}</figcaption>
             </figure>
           ))
@@ -254,7 +259,7 @@ const single = screens.length === 1 ? screens[0] : null;
   }
 
   .screen-rail__item {
-    flex: 0 0 min(280px, 72vw);
+    flex: 0 0 min(250px, 68vw);
     scroll-snap-align: start;
     display: grid;
     gap: 10px;

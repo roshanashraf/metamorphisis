@@ -1,0 +1,283 @@
+---
+import type { ImageMetadata } from 'astro';
+import PhoneMockup from '../../case/PhoneMockup.astro';
+
+interface Step {
+  src: ImageMetadata;
+  alt: string;
+  caption: string;
+}
+
+interface Props {
+  primary: Step[];
+  alternate: Step[];
+  /** Same-day flight already on MakeMyTrip for this airport. */
+  prefill?: Step;
+  /** Width of each phone in the flow, in pixels. */
+  phoneWidth?: number;
+}
+
+const { primary, alternate, prefill, phoneWidth = 250 } = Astro.props;
+const phoneHeight = Math.round(phoneWidth * (1387.5 / 667.359));
+---
+
+<figure class="flight-info-flow" aria-labelledby="flight-info-flow-title">
+  <p id="flight-info-flow-title" class="flight-info-flow__sr">
+  {
+    prefill
+      ? 'Flight info on review: type a number, find a flight, or add one we prefilled from an existing MakeMyTrip flight booking.'
+      : 'Flight info on review: enter a flight number or find it from departure airport and schedule.'
+  }
+  </p>
+
+  <div class="flight-info-flow__plate">
+    <p class="flight-info-flow__path-label">Enter flight number or PNR</p>
+    <ol class="flight-info-flow__row" aria-label="Type the flight number">
+      {
+        primary.map((step, index) => (
+          <>
+            <li class="flight-info-flow__step">
+              <PhoneMockup
+                image={step.src}
+                alt={step.alt}
+                width={phoneWidth}
+                height={phoneHeight}
+                eager={index === 0}
+              />
+              <figcaption class="flight-info-flow__caption">{step.caption}</figcaption>
+            </li>
+            {index < primary.length - 1 ? (
+              <li class="flight-info-flow__arrow" aria-hidden="true" />
+            ) : null}
+          </>
+        ))
+      }
+    </ol>
+
+    <div class="flight-info-flow__fork" aria-label="Alternative when you do not have the number">
+      <p class="flight-info-flow__fork-quote">Who would even remember flight number??</p>
+      <p class="flight-info-flow__fork-link">Don’t remember? <strong>Find your flight</strong></p>
+    </div>
+
+    <p class="flight-info-flow__path-label">Find your flight</p>
+    <ol class="flight-info-flow__row" aria-label="Search and choose your flight">
+      {
+        alternate.map((step, index) => (
+          <>
+            <li class="flight-info-flow__step">
+              <PhoneMockup
+                image={step.src}
+                alt={step.alt}
+                width={phoneWidth}
+                height={phoneHeight}
+                eager={false}
+              />
+              <figcaption class="flight-info-flow__caption">{step.caption}</figcaption>
+            </li>
+            {index < alternate.length - 1 ? (
+              <li class="flight-info-flow__arrow" aria-hidden="true" />
+            ) : null}
+          </>
+        ))
+      }
+    </ol>
+
+    {
+      prefill ? (
+        <>
+          <div class="flight-info-flow__divider" role="separator">
+            <span class="flight-info-flow__divider-label">Or</span>
+          </div>
+          <p class="flight-info-flow__path-label">Already booked a flight with us</p>
+          <p class="flight-info-flow__path-note">
+            Same day and airport—we find the flight booking and ask you to add it—no typing.
+          </p>
+          <ol class="flight-info-flow__row flight-info-flow__row--solo" aria-label="Prefilled flight from MakeMyTrip">
+            <li class="flight-info-flow__step">
+              <PhoneMockup image={prefill.src} alt={prefill.alt} width={phoneWidth} height={phoneHeight} />
+              <figcaption class="flight-info-flow__caption">{prefill.caption}</figcaption>
+            </li>
+          </ol>
+        </>
+      ) : null
+    }
+
+    <p class="flight-info-flow__join">
+      {prefill ? 'Every path syncs the flight on review—then pay.' : 'Both paths sync the flight on review—then pay.'}
+    </p>
+  </div>
+</figure>
+
+<style>
+  .flight-info-flow {
+    margin: var(--space-5) 0 0;
+  }
+
+  .flight-info-flow__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .flight-info-flow__plate {
+    display: grid;
+    gap: var(--space-4);
+    padding: clamp(var(--space-4), 4vw, var(--space-6));
+    border-radius: clamp(20px, 4vw, 40px);
+    background: var(--color-home-bg);
+    border: 1px solid var(--color-home-rule);
+    box-shadow: 0 1px 0 rgba(var(--color-home-ink-rgb), 0.04);
+  }
+
+  .flight-info-flow__path-label {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-home-muted);
+  }
+
+  .flight-info-flow__path-note {
+    margin: calc(-1 * var(--space-2)) 0 0;
+    max-width: 42ch;
+    font-size: var(--case-body);
+    line-height: 1.5;
+    color: var(--color-home-muted);
+  }
+
+  .flight-info-flow__divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-block: var(--space-1);
+  }
+
+  .flight-info-flow__divider::before,
+  .flight-info-flow__divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-home-rule);
+  }
+
+  .flight-info-flow__divider-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-home-muted);
+  }
+
+  .flight-info-flow__row--solo {
+    padding-bottom: 0;
+  }
+
+  .flight-info-flow__row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0;
+    margin: 0;
+    padding: 0 0 var(--space-2);
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .flight-info-flow__step {
+    flex: 0 0 auto;
+    display: grid;
+    gap: 8px;
+    align-self: flex-start;
+    width: min(258px, 68vw);
+    scroll-snap-align: start;
+  }
+
+  .flight-info-flow__caption {
+    margin: 0;
+    max-width: 22ch;
+    font-size: var(--case-body);
+    line-height: 1.45;
+    color: var(--color-home-muted);
+  }
+
+  .flight-info-flow__arrow {
+    flex: 0 0 28px;
+    align-self: center;
+    height: 2px;
+    margin-top: -2.5rem;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--color-home-muted) 35%,
+      var(--color-home-muted) 65%,
+      transparent 100%
+    );
+    position: relative;
+    list-style: none;
+  }
+
+  .flight-info-flow__arrow::after {
+    content: '';
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--color-home-muted);
+    border-bottom: 2px solid var(--color-home-muted);
+    transform: translateY(-50%) rotate(-45deg);
+  }
+
+  .flight-info-flow__fork {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-4) var(--space-4) var(--space-5);
+    border-left: 3px solid var(--color-home-rule);
+    margin-left: clamp(12px, 8vw, 48px);
+  }
+
+  .flight-info-flow__fork-quote {
+    margin: 0;
+    font-family: var(--font-home-display);
+    font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.35;
+    color: var(--color-home-ink);
+    text-wrap: pretty;
+  }
+
+  .flight-info-flow__fork-link {
+    margin: 0;
+    font-size: var(--case-body);
+    line-height: 1.5;
+    color: var(--color-home-muted);
+  }
+
+  .flight-info-flow__fork-link strong {
+    font-weight: 600;
+    color: var(--color-home-ink);
+  }
+
+  .flight-info-flow__join {
+    margin: 0;
+    padding-top: var(--space-2);
+    font-size: var(--case-body);
+    line-height: 1.5;
+    color: var(--color-home-muted);
+    border-top: 1px solid var(--color-home-rule);
+  }
+
+  @media (max-width: 639px) {
+    .flight-info-flow__arrow {
+      flex-basis: 16px;
+    }
+  }
+</style>

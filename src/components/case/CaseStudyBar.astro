@@ -49,10 +49,7 @@ import ThemeSwitch from '../ThemeSwitch.astro';
   </label>
   <label class="case-settings__switch">
     <span>Notch</span>
-    <select data-phone-notch aria-label="Phone notch">
-      <option value="with">With</option>
-      <option value="without" selected>Without</option>
-    </select>
+    <input type="checkbox" data-phone-notch aria-label="Phone notch" />
   </label>
 </dialog>
 
@@ -104,12 +101,12 @@ import ThemeSwitch from '../ThemeSwitch.astro';
       return;
     }
 
-    if (!(target instanceof HTMLSelectElement)) return;
-
-    if (target.matches('[data-phone-notch]')) {
-      applyNotch(target.value);
+    if (target instanceof HTMLInputElement && target.matches('[data-phone-notch]')) {
+      applyNotch(target.checked ? 'with' : 'without');
       return;
     }
+
+    if (!(target instanceof HTMLSelectElement)) return;
 
     if (!target.matches('[data-companion-variant]')) return;
 
@@ -143,10 +140,9 @@ import ThemeSwitch from '../ThemeSwitch.astro';
   }
 
   function syncNotch() {
-    const select = document.querySelector('select[data-phone-notch]');
-    if (!(select instanceof HTMLSelectElement)) return;
+    const input = document.querySelector('[data-phone-notch]');
     const current = readNotch();
-    if (select.value !== current) select.value = current;
+    if (input instanceof HTMLInputElement) input.checked = current === 'with';
     document.documentElement.dataset.phoneNotch = current;
   }
 

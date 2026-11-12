@@ -8,8 +8,8 @@ export default defineConfig({
   output: 'static',
   integrations: [mdx()],
   image: {
-    // Prefer modern formats for the image pipeline smoke test / future covers
     formats: ['avif', 'webp'],
+    quality: 92,
   },
   prefetch: {
     prefetchAll: false,
